@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gettext libglib2.0-bin zip
+      - name: Tag matches metadata.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          meta="$(python3 -c 'import json; print(json.load(open("extension/ledge@gabrielgirardi.github.io/metadata.json"))["version-name"])')"
+          [ "$tag" = "$meta" ] || { echo "tag v$tag does not match version-name $meta"; exit 1; }
+      - name: Static checks
+        run: ./scripts/check.sh
+      - name: Pack extension
+        run: ./scripts/pack.sh
+      - name: Release notes from CHANGELOG
+        run: |
+          python3 - "${GITHUB_REF_NAME#v}" > notes.md <<'PY'
+          import re, sys
+          text = open("CHANGELOG.md").read()
+          m = re.search(rf"^## \[{re.escape(sys.argv[1])}\][^\n]*\n(.*?)(?=^## \[|^\[)", text, re.M | re.S)
+          print(m.group(1).strip() if m else "See CHANGELOG.md")
+          PY
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          flags=()
+          case "$version" in 0.*|*-*) flags+=(--prerelease) ;; esac
+          gh release create "$GITHUB_REF_NAME" dist/*.zip --title "Ledge $version" --notes-file notes.md "${flags[@]}"

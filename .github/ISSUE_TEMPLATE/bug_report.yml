@@ -1,0 +1,71 @@
+name: Bug report
+description: Something does not work as described
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Fill in every field; most bugs cannot be reproduced without them.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the panel with a two-finger swipe from the right edge
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: ledge
+    attributes:
+      label: Ledge version
+      description: Shown by `gnome-extensions info ledge@gabrielgirardi.github.io`, or the commit hash if built from source.
+    validations:
+      required: true
+  - type: input
+    id: gnome
+    attributes:
+      label: GNOME Shell version
+      description: Output of `gnome-shell --version`
+    validations:
+      required: true
+  - type: input
+    id: distro
+    attributes:
+      label: Distribution
+      placeholder: Ubuntu 24.04, Fedora 41, ...
+    validations:
+      required: true
+  - type: dropdown
+    id: session
+    attributes:
+      label: Session type
+      description: Output of `echo $XDG_SESSION_TYPE`
+      options: [wayland, x11]
+    validations:
+      required: true
+  - type: input
+    id: touchpad
+    attributes:
+      label: Touchpad (gesture bugs only)
+      description: The touchpad name from `grep -i touchpad /proc/bus/input/devices`
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        `journalctl -b /usr/bin/gnome-shell | grep -i ledge` and `journalctl --user -u ledge-touchd -b`.
+        For gesture bugs, also attach the output of `python3 touchd/ledge-touchd.py --trace` while you repeat the gesture.
+      render: text
+  - type: textarea
+    id: extensions
+    attributes:
+      label: Other enabled extensions
+      description: Output of `gnome-extensions list --enabled`. Conflicts with other extensions are common.
+      render: text

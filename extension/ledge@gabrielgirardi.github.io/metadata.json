@@ -1,0 +1,12 @@
+{
+  "uuid": "ledge@gabrielgirardi.github.io",
+  "name": "Ledge",
+  "description": "A Today View sidebar that follows a two-finger swipe from the touchpad edge.",
+  "shell-version": [
+    "46"
+  ],
+  "settings-schema": "org.gnome.shell.extensions.ledge",
+  "gettext-domain": "ledge",
+  "url": "https://github.com/GabrielGirardi/ledge",
+  "version-name": "0.1.0"
+}

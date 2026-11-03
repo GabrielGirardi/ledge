@@ -1,0 +1,68 @@
+.ledge-tint {
+  background-color: rgba(22, 22, 26, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 26px;
+}
+
+.ledge-content {
+  padding: 22px 18px;
+  spacing: 12px;
+}
+
+.ledge-weekday {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  font-weight: 700;
+  padding-left: 4px;
+}
+
+.ledge-date {
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 800;
+  padding-left: 4px;
+  margin-bottom: 8px;
+}
+
+.ledge-card {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 14px 16px;
+  spacing: 6px;
+}
+
+.ledge-card-head { spacing: 6px; }
+.ledge-card-icon { icon-size: 14px; color: rgba(255, 255, 255, 0.7); }
+.ledge-card-title { color: rgba(255, 255, 255, 0.6); font-size: 11px; font-weight: 700; }
+.ledge-card-value { color: #ffffff; font-size: 30px; font-weight: 300; }
+.ledge-card-sub { color: rgba(255, 255, 255, 0.6); font-size: 12px; }
+
+.ledge-weather { spacing: 12px; }
+.ledge-weather-icon { icon-size: 40px; color: #ffffff; }
+
+.ledge-battery-row { spacing: 14px; padding-top: 4px; }
+.ledge-battery { spacing: 6px; }
+.ledge-battery-icon { icon-size: 20px; color: #ffffff; }
+.ledge-battery-label { color: rgba(255, 255, 255, 0.85); font-size: 12px; font-weight: 600; }
+
+.ledge-agenda { spacing: 8px; padding-top: 2px; }
+.ledge-agenda-empty { color: rgba(255, 255, 255, 0.7); font-size: 14px; }
+.ledge-event { spacing: 10px; }
+.ledge-event-bar { width: 3px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.35); }
+.ledge-event-bar-now { background-color: #0a84ff; }
+.ledge-event-title { color: #ffffff; font-size: 14px; font-weight: 600; }
+.ledge-event-time { color: rgba(255, 255, 255, 0.6); font-size: 12px; }
+
+.ledge-media { spacing: 12px; padding-top: 2px; }
+.ledge-media-cover { border-radius: 10px; }
+.ledge-media-title { color: #ffffff; font-size: 14px; font-weight: 700; }
+.ledge-media-artist { color: rgba(255, 255, 255, 0.6); font-size: 12px; }
+.ledge-media-controls { spacing: 18px; padding-top: 4px; }
+.ledge-media-button {
+  border-radius: 999px;
+  padding: 8px;
+  color: #ffffff;
+}
+.ledge-media-button:hover { background-color: rgba(255, 255, 255, 0.12); }
+.ledge-media-button:active { background-color: rgba(255, 255, 255, 0.2); }

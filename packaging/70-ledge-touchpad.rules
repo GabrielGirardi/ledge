@@ -1,0 +1,3 @@
+# Ledge: let the logged-in user read touchpads (only touchpads, never keyboards)
+# so ledge-touchd can see where fingers land. Must sort before 73-seat-late.rules.
+ACTION=="add|change", SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHPAD}=="1", TAG+="uaccess"

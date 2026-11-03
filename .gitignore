@@ -1,0 +1,6 @@
+gschemas.compiled
+__pycache__/
+*.pyc
+dist/
+extension/ledge@gabrielgirardi.github.io/locale/
+*.mo

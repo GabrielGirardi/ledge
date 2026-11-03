@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.ledge" path="/org/gnome/shell/extensions/ledge/">
+    <key name="side" type="s">
+      <choices>
+        <choice value="right"/>
+        <choice value="left"/>
+      </choices>
+      <default>'right'</default>
+      <summary>Screen edge the panel opens from</summary>
+      <description>Only a two-finger swipe from this touchpad edge opens the panel.</description>
+    </key>
+    <key name="weather-city" type="s">
+      <default>''</default>
+      <summary>City used for weather</summary>
+      <description>Empty uses the city of the system time zone.</description>
+    </key>
+    <key name="toggle-shortcut" type="as">
+      <default><![CDATA[['<Super>t']]]></default>
+      <summary>Keyboard shortcut that opens and closes the panel</summary>
+    </key>
+    <key name="show-indicator" type="b">
+      <default>true</default>
+      <summary>Show a top bar button that opens and closes the panel</summary>
+    </key>
+  </schema>
+</schemalist>

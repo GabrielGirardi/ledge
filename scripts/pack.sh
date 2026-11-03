@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Builds dist/ledge@gabrielgirardi.github.io.shell-extension.zip with compiled
+# schemas and translations. Prints the zip path.
+set -euo pipefail
+here="$(cd "$(dirname "$0")/.." && pwd)"
+uuid="ledge@gabrielgirardi.github.io"
+src="$here/extension/$uuid"
+stage="$(mktemp -d)"
+trap 'rm -rf "$stage"' EXIT
+
+cp -r "$src"/{extension.js,prefs.js,glass.js,locale.js,metadata.json,stylesheet.css,widgets,schemas} "$stage/"
+rm -f "$stage/schemas/gschemas.compiled"
+glib-compile-schemas "$stage/schemas"
+for po in "$here"/po/*.po; do
+  lang="$(basename "$po" .po)"
+  mkdir -p "$stage/locale/$lang/LC_MESSAGES"
+  msgfmt -o "$stage/locale/$lang/LC_MESSAGES/ledge.mo" "$po"
+done
+
+mkdir -p "$here/dist"
+out="$here/dist/$uuid.shell-extension.zip"
+rm -f "$out"
+(cd "$stage" && zip -qr "$out" .)
+echo "$out"

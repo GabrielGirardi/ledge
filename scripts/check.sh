@@ -11,11 +11,13 @@ step "JavaScript syntax"
 while IFS= read -r f; do node --check "$f" || fail "$f"; done < <(find "$ext" -name '*.js')
 
 step "Python syntax"
-python3 -m py_compile "$here/touchd/ledge-touchd.py" || fail "ledge-touchd.py"
-rm -rf "$here/touchd/__pycache__"
+for f in "$here/touchd/ledge-touchd.py" "$here"/tools/screenshots/*.py; do
+  python3 -m py_compile "$f" || fail "$f"
+done
+find "$here/touchd" "$here/tools" -name __pycache__ -type d -exec rm -rf {} +
 
 step "Shell scripts"
-for f in "$here"/scripts/*.sh; do bash -n "$f" || fail "$f"; done
+for f in "$here"/scripts/*.sh "$here"/tools/screenshots/*.sh; do bash -n "$f" || fail "$f"; done
 
 step "GSettings schema"
 glib-compile-schemas --strict --dry-run "$ext/schemas" || fail "schema"

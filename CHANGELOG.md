@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The keyboard shortcut row in the preferences showed an empty title, because
+  `<Super>` in the title was parsed as markup.
+
+### Added
+
+- README screenshots and a gesture animation, generated from fictional data by
+  `tools/screenshots/run.sh`.
+
 ## [0.1.0] - 2026-11-03
 
 First preview.

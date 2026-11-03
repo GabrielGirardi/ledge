@@ -72,6 +72,20 @@ python3 touchd/ledge-touchd.py --trace   # every raw touchpad frame
 Attach a `--trace` capture to gesture bug reports. It shows exactly what the
 touchpad reported.
 
+### README images
+
+`docs/images/` is generated. Do not edit the images by hand. To refresh them
+after a visual change, run:
+
+```sh
+./tools/screenshots/run.sh
+```
+
+The script opens a nested GNOME Shell for about a minute, with an isolated
+profile: a generated wallpaper and album art, a local calendar of fictional
+events, and a demo music player. Your own accounts, calendars, and extensions
+never appear in the images. Batteries and weather are live.
+
 ## Making a change
 
 1. Fork the repository and create a branch from `main`:

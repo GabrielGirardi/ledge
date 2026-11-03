@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-03 20:20-0300\n"
+"POT-Creation-Date: 2026-11-03 20:35-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,17 +53,17 @@ msgstr ""
 msgid "Keyboard shortcut (for example <Super>t)"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:49
+#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:50
 #: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:41
 #: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:120
 msgid "Weather"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:50
+#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:51
 msgid "Data from Open-Meteo. Leave empty to use the city of your time zone."
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:53
+#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:54
 msgid "City"
 msgstr ""
 

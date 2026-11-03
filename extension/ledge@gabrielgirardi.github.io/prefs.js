@@ -29,6 +29,7 @@ export default class LedgePreferences extends ExtensionPreferences {
 
         const shortcut = new Adw.EntryRow({
             title: _('Keyboard shortcut (for example <Super>t)'),
+            use_markup: false,
             text: settings.get_strv('toggle-shortcut')[0] ?? '',
             show_apply_button: true,
         });

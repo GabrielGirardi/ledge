@@ -183,13 +183,15 @@ state machine, and how the glass is rendered.
 - [x] Weather, batteries, calendar, and Now Playing widgets
 - [x] Keyboard shortcut, top bar button, left or right edge
 - [x] English and Brazilian Portuguese
-- [ ] Open on the monitor under the pointer
-- [ ] Choose, reorder, and hide widgets, with an edit mode
-- [ ] GNOME Shell 47, 48, and 49
-- [ ] Hot corner trigger
-- [ ] More widgets: phone battery (GSConnect), system stats, world clocks, reminders
-- [ ] Packages: extensions.gnome.org, AUR, Fedora COPR, `.deb`
-- [ ] Rewrite the helper in Rust
+- [ ] **0.2:** a hot edge (push the pointer against the screen edge), opening on the monitor under the pointer, and choosing, reordering, and editing widgets
+- [ ] **0.3:** GNOME Shell 47, 48, and 49
+- [ ] **0.4:** more widgets: phone battery (GSConnect), system stats, world clocks, reminders
+- [ ] **0.5:** extensions.gnome.org, AUR, Fedora COPR, `.deb`, and a Rust helper
+
+The [milestones](https://github.com/GabrielGirardi/ledge/milestones) track the
+details. Issues labeled [`good first
+issue`](https://github.com/GabrielGirardi/ledge/labels/good%20first%20issue)
+are a good place to start.
 
 ## Contributing
 

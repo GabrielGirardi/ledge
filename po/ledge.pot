@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-03 20:35-0300\n"
+"POT-Creation-Date: 2026-11-03 21:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,145 +17,206 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/extension.js:158
+#: extension/ledge@gabrielgirardi.github.io/extension.js:199
 msgid "Today"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:13
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:13
 msgid "Panel"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:15
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:15
 msgid "Screen side"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:16
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:16
 msgid "The panel opens with a two-finger swipe from this touchpad edge"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:17
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:17
 msgid "Right"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:17
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:17
 msgid "Left"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:24
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:24
 msgid "Top bar button"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:25
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:25
 msgid "Click it to open or close the panel"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:31
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:31
 msgid "Keyboard shortcut (for example <Super>t)"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:50
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:41
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:120
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:50
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:41
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:120
 msgid "Weather"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:51
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:51
 msgid "Data from Open-Meteo. Leave empty to use the city of your time zone."
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/prefs.js:54
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:54
 msgid "City"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:21
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:21
 msgid "Calendar"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:50
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:50
 msgid "Nothing else today"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:68
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:68
 msgid "All day"
 msgstr ""
 
 #. Translators: an event happening now; %s is its end time
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:71
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:71
 #, javascript-format
 msgid "Now · until %s"
 msgstr ""
 
 #. Translators: event start and end times
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:74
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:74
 #, javascript-format
 msgid "%s – %s"
 msgstr ""
 
 #. Translators: %s is the event time, e.g. "Tomorrow · 09:30 – 10:00"
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:77
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:77
 #, javascript-format
 msgid "Tomorrow · %s"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:89
+#: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:89
 msgid "Batteries"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/media.js:17
+#: extension/ledge@gabrielgirardi.github.io/widgets/media.js:17
 msgid "Now Playing"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:18
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:17
+msgid "<1m"
+msgstr ""
+
+#. Translators: hours and minutes, e.g. "3h 05m"
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:21
+#, javascript-format
+msgid "%dh %02dm"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:21
+#, javascript-format
+msgid "%dm"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:26
+msgid "Screen Time"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:28
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:46
+msgid "Today, in apps"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:46
+msgid "Nothing tracked yet today"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:15
+msgid "To-do"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:21
+msgid "Add a task"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:31
+msgid "Clear completed"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:89
+msgid "All done"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:90
+#, javascript-format
+msgid "%d left"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:100
+msgid "Mark as not done"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:100
+msgid "Mark as done"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:116
+msgid "Delete task"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:18
 msgid "Clear sky"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:19
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:19
 msgid "Partly cloudy"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:20
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:20
 msgid "Overcast"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:21
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:21
 msgid "Fog"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:22
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:22
 msgid "Drizzle"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:23
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:23
 msgid "Rain"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:24
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:24
 msgid "Snow"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:25
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:25
 msgid "Thunderstorm"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:32
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:32
 msgid "Unavailable"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:65
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:65
 msgid "Loading…"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:77
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:77
 msgid "Could not load the weather"
 msgstr ""
 
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:106
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:106
 #, javascript-format
 msgid "City “%s” not found"
 msgstr ""
 
 #. Translators: condition · daily high and low, e.g. "Rain · high 28° low 17°"
-#: /home/ggirardi/Documents/personal/ledge/extension/ledge@gabrielgirardi.github.io/widgets/weather.js:123
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:123
 #, javascript-format
 msgid "%s · high %s° low %s°"
 msgstr ""

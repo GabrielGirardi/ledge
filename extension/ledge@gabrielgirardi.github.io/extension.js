@@ -14,6 +14,8 @@ import {timeLocale} from './locale.js';
 import {AgendaWidget} from './widgets/agenda.js';
 import {BatteriesWidget} from './widgets/batteries.js';
 import {MediaWidget} from './widgets/media.js';
+import {ScreenTimeWidget} from './widgets/screentime.js';
+import {TodoWidget} from './widgets/todo.js';
 import {WeatherWidget} from './widgets/weather.js';
 
 const BUS_PATH = '/io/github/gabrielgirardi/Ledge/Touchpad';
@@ -56,7 +58,15 @@ class Ledge {
         this._panel.add_child(this._glass.actor);
         this._panel.add_child(new St.Widget({style_class: 'ledge-tint', x_expand: true, y_expand: true}));
 
-        this._content = new St.BoxLayout({vertical: true, style_class: 'ledge-content', x_expand: true, y_expand: true});
+        this._content = new St.BoxLayout({vertical: true, style_class: 'ledge-content', x_expand: true});
+        this._scroll = new St.ScrollView({
+            style_class: 'ledge-scroll vfade',
+            hscrollbar_policy: St.PolicyType.NEVER,
+            vscrollbar_policy: St.PolicyType.AUTOMATIC,
+            overlay_scrollbars: true,
+            x_expand: true,
+            y_expand: true,
+        });
         this._weekday = new St.Label({style_class: 'ledge-weekday'});
         this._date = new St.Label({style_class: 'ledge-date'});
         this._content.add_child(this._weekday);
@@ -66,10 +76,13 @@ class Ledge {
             new WeatherWidget(settings),
             new BatteriesWidget(),
             new AgendaWidget(),
+            new TodoWidget(),
+            new ScreenTimeWidget(),
             new MediaWidget(),
         ];
         this._widgets.forEach(w => this._content.add_child(w.actor));
-        this._panel.add_child(this._content);
+        this._scroll.child = this._content;
+        this._panel.add_child(this._scroll);
 
         this._strip.add_child(this._panel);
         Main.layoutManager.addTopChrome(this._strip);
@@ -126,17 +139,45 @@ class Ledge {
         this._layoutSide = this._settings.get_string('side');
         const right = this._layoutSide === 'right';
         const wa = Main.layoutManager.getWorkAreaForMonitor(index);
+        const [top, bottom] = this._verticalRoom(monitor, wa);
         const stripWidth = PANEL_WIDTH + MARGIN + BLEED;
         const stripX = right ? wa.x + wa.width - stripWidth : wa.x;
         const panelX = right ? BLEED : MARGIN;
-        this._strip.set_position(stripX, wa.y);
-        this._strip.set_size(stripWidth, wa.height);
+        this._strip.set_position(stripX, top);
+        this._strip.set_size(stripWidth, bottom - top);
         this._panel.set_position(panelX, MARGIN);
         this._panel.set_width(PANEL_WIDTH);
-        this._panelOrigin = [stripX + panelX - monitor.x, wa.y + MARGIN - monitor.y];
+        // Taller than the room available: cap the panel and let the content scroll.
+        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+        this._panel.style = `max-height: ${Math.floor((bottom - top - 2 * MARGIN) / scale)}px;`;
+        this._panelOrigin = [stripX + panelX - monitor.x, top + MARGIN - monitor.y];
         this._hiddenOffset = PANEL_WIDTH + MARGIN + BLEED;
         this._glass.setMonitor(index);
         this._apply();
+    }
+
+    /**
+     * The work area, minus GNOME's panel wherever it actually is. Bars that
+     * auto-hide (Zorin Taskbar, Dash to Panel) reserve no work-area space, so
+     * the work area alone would put the sidebar underneath them.
+     */
+    _verticalRoom(monitor, wa) {
+        let top = wa.y;
+        let bottom = wa.y + wa.height;
+        const bar = Main.panel;
+        if (!bar.mapped)
+            return [top, bottom];
+        const [x, y] = bar.get_transformed_position();
+        const [w, h] = bar.get_transformed_size();
+        const onMonitor = x < monitor.x + monitor.width && x + w > monitor.x &&
+            y < monitor.y + monitor.height && y + h > monitor.y;
+        if (onMonitor && h > 0) {
+            if (y + h / 2 < monitor.y + monitor.height / 2)
+                top = Math.max(top, y + h);
+            else
+                bottom = Math.min(bottom, y);
+        }
+        return [top, bottom];
     }
 
     _refreshDate() {
@@ -185,8 +226,8 @@ class Ledge {
 
     _open() {
         if (this._state === State.CLOSED) {
-            if (this._layoutSide !== this._settings.get_string('side'))
-                this._relayout();
+            // Bars move and auto-hide, so measure the room on every open.
+            this._relayout();
             this._prepareOpen();
             this._cascadeCards();
         }
@@ -226,13 +267,15 @@ class Ledge {
         if (this._grab)
             return;
         this._grab = Main.pushModal(this._panel, {actionMode: Shell.ActionMode.POPUP});
-        this._capturedId = global.stage.connect('captured-event', (_a, e) => this._onCaptured(e));
+        // While grabbed, Clutter delivers every event (including clicks outside
+        // the panel) to the grab actor's subtree only; the stage never sees them.
+        this._capturedId = this._panel.connect('captured-event', (_a, e) => this._onCaptured(e));
     }
 
     _releaseInput() {
         if (!this._grab)
             return;
-        global.stage.disconnect(this._capturedId);
+        this._panel.disconnect(this._capturedId);
         Main.popModal(this._grab);
         this._grab = null;
     }
@@ -240,8 +283,10 @@ class Ledge {
     _onCaptured(event) {
         switch (event.type()) {
         case Clutter.EventType.SCROLL:
-            return event.get_scroll_source() === Clutter.ScrollSource.FINGER
-                ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
+            // Over the panel, scrolling scrolls the widgets. Elsewhere it is
+            // swallowed so the window underneath does not move.
+            return this._panel.contains(global.stage.get_event_actor(event))
+                ? Clutter.EVENT_PROPAGATE : Clutter.EVENT_STOP;
         case Clutter.EventType.BUTTON_PRESS:
         case Clutter.EventType.TOUCH_BEGIN:
             if (this._panel.contains(global.stage.get_event_actor(event)))
@@ -362,6 +407,51 @@ class Ledge {
             }),
             sub('Shot', path => this._shot(path).catch(logError)),
             sub('Toggle', () => this.toggle()),
+            sub('State', () => console.log(`ledge-state ${Object.keys(State)[this._state]} ` +
+                `progress=${this._progress.toFixed(3)} grab=${Boolean(this._grab)} ` +
+                `focus=${global.stage.get_key_focus()?.constructor.name ?? 'none'}`)),
+            sub('Click', (x, y) => {
+                const seat = Clutter.get_default_backend().get_default_seat();
+                this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
+                seat.warp_pointer(x, y);
+                // The button must land after the motion has been processed.
+                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                    const t = GLib.get_monotonic_time();
+                    this._devPointer.notify_button(t, Clutter.BUTTON_PRIMARY, Clutter.ButtonState.PRESSED);
+                    this._devPointer.notify_button(t + 1000, Clutter.BUTTON_PRIMARY, Clutter.ButtonState.RELEASED);
+                    return GLib.SOURCE_REMOVE;
+                });
+            }),
+            sub('Scroll', (x, y, steps) => {
+                const seat = Clutter.get_default_backend().get_default_seat();
+                this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
+                seat.warp_pointer(x, y);
+                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                    for (let i = 0; i < Math.abs(steps); i++) {
+                        this._devPointer.notify_discrete_scroll(GLib.get_monotonic_time() + i * 1000,
+                            steps > 0 ? Clutter.ScrollDirection.DOWN : Clutter.ScrollDirection.UP,
+                            Clutter.ScrollSource.WHEEL);
+                    }
+                    return GLib.SOURCE_REMOVE;
+                });
+            }),
+            sub('Key', keyval => {
+                const seat = Clutter.get_default_backend().get_default_seat();
+                this._devKeyboard ??= seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
+                const t = GLib.get_monotonic_time();
+                this._devKeyboard.notify_keyval(t, keyval, Clutter.KeyState.PRESSED);
+                this._devKeyboard.notify_keyval(t + 1000, keyval, Clutter.KeyState.RELEASED);
+            }),
+            sub('Type', text => {
+                const seat = Clutter.get_default_backend().get_default_seat();
+                this._devKeyboard ??= seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
+                let t = GLib.get_monotonic_time();
+                for (const ch of text) {
+                    const keyval = ch === '\n' ? Clutter.KEY_Return : Clutter.unicode_to_keysym(ch.codePointAt(0));
+                    this._devKeyboard.notify_keyval(t += 1000, keyval, Clutter.KeyState.PRESSED);
+                    this._devKeyboard.notify_keyval(t += 1000, keyval, Clutter.KeyState.RELEASED);
+                }
+            }),
             sub('Dump', () => {
                 for (const actor of [this._strip, this._panel, ...this._panel.get_children()]) {
                     const box = actor.get_allocation_box();

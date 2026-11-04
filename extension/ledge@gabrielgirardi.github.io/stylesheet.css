@@ -66,3 +66,61 @@
 }
 .ledge-media-button:hover { background-color: rgba(255, 255, 255, 0.12); }
 .ledge-media-button:active { background-color: rgba(255, 255, 255, 0.2); }
+
+.ledge-scroll { -st-vfade-offset: 24px; }
+
+.ledge-todo-list { spacing: 2px; padding-top: 2px; }
+.ledge-todo-row { spacing: 8px; border-radius: 10px; padding: 2px 4px 2px 0; }
+.ledge-todo-row:hover { background-color: rgba(255, 255, 255, 0.05); }
+.ledge-todo-check { padding: 4px; border-radius: 8px; color: #ffffff; }
+.ledge-todo-check StIcon { icon-size: 16px; }
+.ledge-todo-check:focus, .ledge-todo-remove:focus { background-color: rgba(255, 255, 255, 0.14); }
+.ledge-todo-text { color: #ffffff; font-size: 14px; }
+.ledge-todo-done { color: rgba(255, 255, 255, 0.4); }
+.ledge-todo-remove { padding: 4px; border-radius: 8px; color: rgba(255, 255, 255, 0.6); }
+.ledge-todo-remove StIcon { icon-size: 12px; }
+.ledge-todo-remove:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.12); }
+.ledge-todo-entry {
+  margin-top: 4px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(0, 0, 0, 0.18);
+  color: #ffffff;
+  font-size: 14px;
+  caret-color: #ffffff;
+  selected-color: #ffffff;
+  selection-background-color: rgba(10, 132, 255, 0.6);
+}
+.ledge-todo-entry:focus { border-color: rgba(10, 132, 255, 0.9); }
+.ledge-todo-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.4); }
+.ledge-todo-footer { padding-top: 4px; }
+.ledge-link-button {
+  color: #64a8ff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.ledge-link-button:hover, .ledge-link-button:focus { background-color: rgba(100, 168, 255, 0.14); }
+
+.ledge-usage-list { spacing: 8px; padding-top: 8px; }
+.ledge-usage-row { spacing: 10px; }
+.ledge-usage-name { color: #ffffff; font-size: 13px; }
+.ledge-usage-track {
+  height: 6px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.10);
+}
+.ledge-usage-fill {
+  height: 6px;
+  border-radius: 3px;
+  background-color: #0a84ff;
+}
+.ledge-usage-time {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 52px;
+  text-align: right;
+}

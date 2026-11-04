@@ -17,6 +17,8 @@ mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
 python3 -I "$tools/make_assets.py" "$work/assets" >/dev/null
 mkdir -p "$XDG_DATA_HOME/evolution/calendar/system"
 cp "$work/assets/calendar.ics" "$XDG_DATA_HOME/evolution/calendar/system/calendar.ics"
+mkdir -p "$XDG_DATA_HOME/ledge"
+cp "$work/assets/todo.json" "$work/assets/usage.json" "$XDG_DATA_HOME/ledge/"
 
 zip="$("$here/scripts/pack.sh")"
 mkdir -p "$XDG_DATA_HOME/gnome-shell/extensions/$uuid"

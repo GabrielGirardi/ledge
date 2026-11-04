@@ -34,8 +34,8 @@ PY
 
 step "Translations"
 tmp="$(mktemp)"
-xgettext --from-code=UTF-8 --language=JavaScript --keyword=_ --add-comments=Translators \
-  --package-name=ledge -o "$tmp" $(find "$ext" -name '*.js' | sort)
+(cd "$here" && xgettext --from-code=UTF-8 --language=JavaScript --keyword=_ --add-comments=Translators \
+  --package-name=ledge -o "$tmp" $(find extension -name '*.js' | sort))
 msgids() { msgcat --no-location --sort-output "$1" | grep -E '^msgid ' ; }
 if ! diff <(msgids "$tmp") <(msgids "$here/po/ledge.pot") >/dev/null; then
   fail "po/ledge.pot is stale; run: scripts/update-po.sh"

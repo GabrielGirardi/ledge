@@ -74,6 +74,14 @@ Accounts.
 Cover art, title, artist, and playback controls for Spotify, browsers, and any
 other player that supports MPRIS.
 
+**✅ To-do**<br>
+A quick list for today. Type a task and press <kbd>Enter</kbd>. Check it off
+or delete it. The list stays on your machine.
+
+**⏱️ Screen Time**<br>
+How long you have used each app today, with your top four. Idle and locked
+time are not counted.
+
 </td>
 </tr>
 </table>
@@ -167,6 +175,9 @@ state machine, and how the glass is rendered.
   grants access to keyboards. The helper sends nothing over the network.
 - **One network request.** The weather widget sends your city name, and then
   its coordinates, to Open-Meteo. Nothing else leaves your machine.
+- **Local data.** Your to-do list and screen time are stored only in
+  `~/.local/share/ledge/`, and only you can read them. Screen time keeps 30
+  days of history. Delete the folder to erase it.
 - **No telemetry.** Ledge has no analytics and no accounts.
 
 ## Troubleshooting
@@ -180,7 +191,7 @@ state machine, and how the glass is rendered.
 ## Roadmap
 
 - [x] Edge-swipe gesture, spring physics, frosted glass
-- [x] Weather, batteries, calendar, and Now Playing widgets
+- [x] Weather, batteries, calendar, to-do, screen time, and Now Playing widgets
 - [x] Keyboard shortcut, top bar button, left or right edge
 - [x] English and Brazilian Portuguese
 - [ ] **0.2:** a hot edge (push the pointer against the screen edge), opening on the monitor under the pointer, and choosing, reordering, and editing widgets

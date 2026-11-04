@@ -8,7 +8,7 @@ src="$here/extension/$uuid"
 stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
 
-cp -r "$src"/{extension.js,prefs.js,glass.js,locale.js,metadata.json,stylesheet.css,widgets,schemas} "$stage/"
+cp -r "$src"/*.js "$src"/{metadata.json,stylesheet.css,widgets,schemas} "$stage/"
 rm -f "$stage/schemas/gschemas.compiled"
 glib-compile-schemas "$stage/schemas"
 for po in "$here"/po/*.po; do

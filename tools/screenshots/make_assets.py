@@ -68,3 +68,19 @@ for i, (summary, a, b) in enumerate(events):
 lines.append("END:VCALENDAR")
 (out / "calendar.ics").write_text("\r\n".join(lines) + "\r\n")
 print(out)
+
+# Ledge's own data, as it would be after a normal day.
+import json  # noqa: E402
+
+(out / "todo.json").write_text(json.dumps({"items": [
+    {"id": "demo-1", "text": "Reply to the design feedback", "done": False},
+    {"id": "demo-2", "text": "Book flights for the conference", "done": False},
+    {"id": "demo-3", "text": "Water the plants", "done": True},
+]}))
+(out / "usage.json").write_text(json.dumps({"days": {now.strftime("%Y-%m-%d"): {
+    "org.gnome.TextEditor.desktop": 2 * 3600 + 14 * 60,
+    "org.gnome.Terminal.desktop": 1 * 3600 + 32 * 60,
+    "org.gnome.Nautilus.desktop": 41 * 60,
+    "org.gnome.Calendar.desktop": 18 * 60,
+    "org.gnome.Calculator.desktop": 4 * 60,
+}}}))

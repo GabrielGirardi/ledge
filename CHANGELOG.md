@@ -7,15 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- The keyboard shortcut row in the preferences showed an empty title, because
-  `<Super>` in the title was parsed as markup.
-
 ### Added
 
+- To-do widget: add, check off, delete, and clear tasks. Stored locally in
+  `~/.local/share/ledge/todo.json`.
+- Screen Time widget: today's total and top apps by focused time, not counting
+  idle or locked time. Stored locally in `~/.local/share/ledge/usage.json`,
+  with 30 days of history.
+- The panel scrolls when its content is taller than the screen.
+- `scripts/headless.sh` and `scripts/dev-signal.sh`: a scriptable headless
+  shell with real pointer and keyboard hooks, for reproducing input bugs.
 - README screenshots and a gesture animation, generated from fictional data by
   `tools/screenshots/run.sh`.
+
+### Fixed
+
+- Clicking outside the panel or pressing <kbd>Esc</kbd> did not close it. The
+  listener was on the stage, which receives nothing while the panel holds its
+  input grab.
+- The panel no longer covers bars that hide automatically, such as Zorin
+  Taskbar with intellihide.
+- The keyboard shortcut row in the preferences showed an empty title, because
+  `<Super>` in the title was parsed as markup.
+- Translation templates no longer contain absolute paths.
 
 ## [0.1.0] - 2026-11-03
 

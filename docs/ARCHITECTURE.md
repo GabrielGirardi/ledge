@@ -91,9 +91,24 @@ When the fingers lift, the panel settles toward the end the user meant. A
 release velocity above 1.2 panel-widths per second wins. Otherwise the panel
 goes to the nearer end.
 
-While the panel is not `CLOSED`, the extension holds a modal grab. Finger
-scroll events are swallowed, so the window underneath does not scroll. A click
-outside the panel or <kbd>Esc</kbd> closes it.
+While the panel is not `CLOSED`, the extension holds a modal grab with
+`Main.pushModal(panel)`. During a Clutter grab, every event, including clicks
+outside the panel, goes only to the grab actor's subtree. So the extension
+listens on the panel's `captured-event`, not the stage's. A listener on the
+stage never fires while the grab is active.
+
+- **Click outside, or <kbd>Esc</kbd>:** closes the panel. <kbd>Esc</kbd> also
+  works while a text field in the panel has focus.
+- **Scroll over the panel:** scrolls the widgets.
+- **Scroll elsewhere:** swallowed, so the window underneath does not move.
+
+### Height
+
+The panel sizes to its content, up to the room between GNOME's panel and the
+opposite edge of the monitor. Beyond that, the content scrolls. The room is
+measured on every open from where `Main.panel` actually is. Bars that hide
+automatically, such as Zorin Taskbar or Dash to Panel, reserve no work-area
+space, so the work area alone would put the sidebar underneath them.
 
 The screen side is read once per layout, as `_layoutSide`. The gesture
 direction and the placement both use that value, so they cannot disagree. A
@@ -130,6 +145,8 @@ Each widget is a module in `widgets/` that exposes:
 | Weather | Open-Meteo geocoding and forecast (libsoup 3) | On open, when the data is older than 30 minutes |
 | Batteries | UPower over the system bus | Live, through `PropertiesChanged` and `DeviceAdded`/`DeviceRemoved` |
 | Calendar | GNOME Shell's `DBusEventSource` (the calendar server) | On open, plus change signals |
+| To-do | `~/.local/share/ledge/todo.json` through `JsonStore` | Written on every change |
+| Screen Time | `UsageTracker` (`usage.js`): `Shell.WindowTracker` focus changes, minus idle (2 min) and locked time | Always running. Saved every 60 s to `~/.local/share/ledge/usage.json`, which keeps 30 days |
 | Now Playing | GNOME Shell's `MprisPlayer`, one per `org.mpris.MediaPlayer2.*` name | Live |
 
 ## Locale

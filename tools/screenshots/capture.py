@@ -17,7 +17,7 @@ from PIL import Image, ImageChops  # noqa: E402
 UUID = "ledge@gabrielgirardi.github.io"
 PATH = "/io/github/gabrielgirardi/Ledge/Touchpad"
 DEV = "io.github.gabrielgirardi.Ledge.Dev1"
-W, H = 1600, 1000
+W, H = 1600, 1240
 
 work, images, schema_dir = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
 raw = work / "raw"
@@ -152,8 +152,8 @@ finally:
     player.terminate()
 
 hero.save(images / "hero.jpg", quality=90, optimize=True, progressive=True)
-hero.crop((W - 470, 0, W, 780)).save(images / "panel.png", optimize=True)
-left.crop((0, 0, 470, 780)).save(images / "left-pt-br.png", optimize=True)
+hero.crop((W - 470, 0, W, H)).save(images / "panel.png", optimize=True)
+left.crop((0, 0, 470, H)).save(images / "left-pt-br.png", optimize=True)
 
 box = ImageChops.difference(prefs_full, desktop).getbbox()
 if box:

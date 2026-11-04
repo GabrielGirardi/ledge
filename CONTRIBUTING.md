@@ -39,26 +39,39 @@ The nested shell has a separate session bus, so it does not see your music
 players or other session services. Test the Now Playing widget either in your
 real session or with a player started on the nested bus.
 
-### Development hooks
+### Headless shell and development hooks
 
-`nested.sh` sets `LEDGE_DEV=1`. In that mode, the extension listens for
-signals on `io.github.gabrielgirardi.Ledge.Dev1`. With them you can drive the
-panel and capture screenshots without touching the touchpad:
-
-| Signal | Effect |
-|---|---|
-| `Show(d progress)` | Pins the panel at a position from 0 (closed) to 1 (open). |
-| `Toggle()` | Same as the keyboard shortcut. |
-| `Shot(s path)` | Saves a PNG of the whole stage. |
-| `Dump()` | Logs the allocation of every panel layer. |
+`scripts/headless.sh` starts GNOME Shell without a window. It runs Ledge from
+your checkout with development hooks on, and returns once the extension is
+`ACTIVE`. In the nested window, the pointer belongs to your real session, so a
+scripted click lands wherever your mouse left the window. In the headless
+shell, the pointer is fully controllable. Use it to reproduce input bugs and
+to check behavior from a script:
 
 ```sh
-export DBUS_SESSION_BUS_ADDRESS=...   # the nested shell's bus, from /proc/<pid>/environ
-gdbus emit --session --object-path /io/github/gabrielgirardi/Ledge/Touchpad \
-  --signal io.github.gabrielgirardi.Ledge.Dev1.Show 1.0
+./scripts/headless.sh                         # prints READY and the log path
+./scripts/dev-signal.sh Toggle                # open the panel
+./scripts/dev-signal.sh Click 300 500         # click outside it
+./scripts/dev-signal.sh State                 # log state, grab, and key focus
+grep ledge-state "$XDG_RUNTIME_DIR/ledge-nested/shell.log"
+./scripts/headless.sh --stop
 ```
 
-The hooks never load in a normal session.
+| Hook | Effect |
+|---|---|
+| `Toggle` | Same as the keyboard shortcut |
+| `Show P` | Pins the panel at a position from 0 (closed) to 1 (open) |
+| `Click X Y`, `Scroll X Y STEPS` | Real pointer events, through the same path as a mouse |
+| `Key KEYVAL`, `Type TEXT` | Real key events. `65307` is Escape; `\n` in the text presses Return. |
+| `Shot PATH` | Saves a PNG of the whole stage |
+| `State`, `Dump` | Log the panel state, or the allocation of every layer |
+
+`nested.sh` also sets `LEDGE_DEV=1`, so the same hooks work there. The hooks
+never load in a normal session.
+
+Both shells use a private data folder (`$XDG_RUNTIME_DIR/ledge-nested/data`).
+An installed copy of Ledge stays untouched, and the to-do list and screen
+time you see in them are separate from your real ones.
 
 ### Gesture helper
 
@@ -141,6 +154,9 @@ version.
   which can differ from their UI language.
 - Add a widget as its own module in `widgets/`. It exposes `actor`, an
   optional `refresh()` that runs when the panel opens, and `destroy()`.
+- Persist widget data with `JsonStore` (`store.js`). It writes asynchronously
+  to `~/.local/share/ledge/`, one write at a time. Never read or write files
+  synchronously.
 
 **Python (helper)**
 

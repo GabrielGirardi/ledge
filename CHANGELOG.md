@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- To-do: checking off a task moved it to the end of the list, so the task
+  under the pointer changed and the next click toggled a different one.
+  Finished tasks now stay where they are, and rows update in place.
+
+### Changed
+
+- To-do redesign: round checkboxes that fill in when done, struck-through
+  finished tasks, a trash button on hover, an add field with a plus icon, and
+  an "N of M done" summary. The list shows about five tasks and scrolls for
+  the rest; adding a task scrolls to it.
+
 ## [0.3.0] - 2026-11-05
 
 ### Added

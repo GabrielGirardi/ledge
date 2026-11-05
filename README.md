@@ -56,8 +56,10 @@ panel opens on the screen you are using.
 <td width="50%" valign="top">
 
 **☀️ Weather**<br>
-Current conditions, with the daily high and low, for your city. Ledge detects
-the city from your time zone. The data comes from
+Current conditions, with the daily high and low, for your city. Search for
+it in the preferences, or let Ledge find it: where your device is, when
+Location Services are on, otherwise the city of your time zone. The data
+comes from
 [Open-Meteo](https://open-meteo.com): free, no API key, no account.
 
 **🔋 Batteries**<br>
@@ -155,7 +157,7 @@ ledge@gabrielgirardi.github.io`, or open the Extensions app.
 | Panel button | On | Sits next to your system icons, wherever your bar is. |
 | Widgets | All six | Choose and order them here, or with the pencil in the panel. |
 | Keyboard shortcut | `<Super>t` | Any GTK accelerator, for example `<Super><Shift>d`. |
-| Weather city | Empty | When empty, Ledge uses the city of your time zone. For example, `America/Sao_Paulo` gives São Paulo. |
+| Weather location | Automatic | Search for a city by name; results show the state and country. Automatic uses where your device is when Location Services are on (Settings › Privacy), otherwise the city of your time zone. |
 
 Text follows your interface language. Dates and times follow your regional
 format, even when the two differ.
@@ -188,8 +190,11 @@ state machine, and how the glass is rendered.
 
 - **Touchpad only.** The udev rule matches `ID_INPUT_TOUCHPAD=1`. It never
   grants access to keyboards. The helper sends nothing over the network.
-- **One network request.** The weather widget sends your city name, and then
-  its coordinates, to Open-Meteo. Nothing else leaves your machine.
+- **Weather only.** The weather widget sends a city name, and then its
+  coordinates, to Open-Meteo. With automatic location and Location Services
+  on, GNOME's location service (GeoClue) finds where you are, as it does for
+  GNOME's own weather; Ledge names the nearest city from an offline list.
+  Nothing else leaves your machine.
 - **Local data.** Your to-do list and screen time are stored only in
   `~/.local/share/ledge/`, and only you can read them. Screen time keeps 30
   days of history. Delete the folder to erase it.

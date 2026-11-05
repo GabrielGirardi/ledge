@@ -1,17 +1,22 @@
 import Clutter from 'gi://Clutter';
+import Geoclue from 'gi://Geoclue';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import Soup from 'gi://Soup?version=3.0';
+import GWeather from 'gi://GWeather?version=4.0';
 import St from 'gi://St';
 
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {getJson, newSession, searchPlaces} from '../geocode.js';
 import {messagesLanguage} from '../locale.js';
 import {cardShell} from './card.js';
 
-Gio._promisify(Soup.Session.prototype, 'send_and_read_async');
-
 const STALE_MS = 30 * 60 * 1000;
+// GeoClue answers in a second or two when it can; without Wi-Fi it may never
+// answer at all.
+const LOCATE_TIMEOUT_S = 10;
+// Moves smaller than this keep the current place (and its forecast).
+const LOCATE_THRESHOLD_M = 2000;
 
 // WMO weather interpretation codes, as used by Open-Meteo.
 const CONDITIONS = [
@@ -35,6 +40,13 @@ function describe(code, isDay) {
     return {label: label(), icon: `${variant}-symbolic`};
 }
 
+class PlaceNotFound extends Error {
+    constructor(city) {
+        super(`no place named ${city}`);
+        this.city = city;
+    }
+}
+
 export class WeatherWidget {
     constructor(settings) {
         this._settings = settings;
@@ -51,16 +63,18 @@ export class WeatherWidget {
         body.add_child(this._icon);
         this.actor.add_child(body);
 
-        this._session = new Soup.Session({user_agent: 'Ledge/0.1 (GNOME Shell extension)', timeout: 15});
+        this._session = newSession();
         this._cancellable = new Gio.Cancellable();
         this._place = null;
         this._fetchedAt = 0;
         this._busy = false;
-        this._cityId = settings.connect('changed::weather-city', () => {
-            this._place = null;
-            this._fetchedAt = 0;
-            this.refresh();
-        });
+        this._stale = false;
+        this._gclue = null;
+        this._locating = null;
+        this._settingsIds = ['changed::weather-location', 'changed::weather-city']
+            .map(signal => settings.connect(signal, () => this._relocate()));
+        this._location = new Gio.Settings({schema_id: 'org.gnome.system.location'});
+        this._locationId = this._location.connect('changed::enabled', () => this._relocate());
 
         this._message(_('Loading…'));
         this.refresh();
@@ -70,54 +84,131 @@ export class WeatherWidget {
         if (this._busy || Date.now() - this._fetchedAt < STALE_MS)
             return;
         this._busy = true;
+        this._stale = false;
         this._update().catch(e => {
             if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
                 return;
             console.warn(`Ledge weather: ${e.message}`);
-            this._message(_('Could not load the weather'));
+            if (!this._stale)
+                this._message(_('Could not load the weather'));
         }).finally(() => {
             this._busy = false;
+            // The place changed while this update ran; it showed the old one.
+            if (this._stale && !this._cancellable.is_cancelled())
+                this.refresh();
         });
     }
 
-    _city() {
-        const city = this._settings.get_string('weather-city').trim();
-        if (city)
-            return city;
-        return GLib.TimeZone.new_local().get_identifier().split('/').pop().replace(/_/g, ' ');
+    /** Forgets the place, so the next refresh looks it up again. */
+    _relocate() {
+        this._stale = this._busy;
+        this._place = null;
+        this._fetchedAt = 0;
+        if (!this._location.get_boolean('enabled'))
+            this._gclue = null;
+        this.refresh();
     }
 
-    async _getJson(url) {
-        const message = Soup.Message.new('GET', url);
-        const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, this._cancellable);
-        if (message.get_status() !== Soup.Status.OK)
-            throw new Error(`HTTP ${message.get_status()} from ${url}`);
-        return JSON.parse(new TextDecoder().decode(bytes.get_data()));
+    /**
+     * Where to show the weather for, in order: a place picked in the
+     * preferences; a city typed in Ledge 0.3 or earlier; the device's
+     * location, when Location Services are on; the city of the time zone.
+     */
+    async _resolvePlace() {
+        const [name, latitude, longitude] = this._settings.get_value('weather-location').deepUnpack();
+        if (name)
+            return {name, latitude, longitude};
+
+        const typed = this._settings.get_string('weather-city').trim();
+        if (typed)
+            return this._geocode(typed);
+
+        if (this._location.get_boolean('enabled')) {
+            try {
+                return await this._locate();
+            } catch (e) {
+                if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED) && this._cancellable.is_cancelled())
+                    throw e;
+                console.warn(`Ledge weather: no location from GeoClue, using the time zone: ${e.message}`);
+            }
+        }
+        return this._geocode(GLib.TimeZone.new_local().get_identifier().split('/').pop().replace(/_/g, ' '));
+    }
+
+    async _geocode(city) {
+        const [hit] = await searchPlaces(this._session, city, messagesLanguage(), {count: 1, cancellable: this._cancellable});
+        if (!hit)
+            throw new PlaceNotFound(city);
+        return hit;
+    }
+
+    async _locate() {
+        if (!this._gclue) {
+            // Gives up after a while; destroy() cancels it too.
+            const attempt = this._locating = new Gio.Cancellable();
+            let timeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, LOCATE_TIMEOUT_S, () => {
+                timeout = 0;
+                attempt.cancel();
+                return GLib.SOURCE_REMOVE;
+            });
+            try {
+                // The desktop id GNOME Shell's own weather uses; GeoClue
+                // allows it whenever Location Services are on.
+                this._gclue = await new Promise((resolve, reject) => {
+                    Geoclue.Simple.new('org.gnome.Shell', Geoclue.AccuracyLevel.CITY, attempt, (_o, result) => {
+                        try {
+                            resolve(Geoclue.Simple.new_finish(result));
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                });
+            } finally {
+                if (timeout)
+                    GLib.source_remove(timeout);
+                this._locating = null;
+            }
+            this._gclue.get_client().distance_threshold = LOCATE_THRESHOLD_M;
+            const gclue = this._gclue;
+            gclue.connect('notify::location', () => {
+                if (this._gclue === gclue)
+                    this._relocate();
+            });
+        }
+        const {latitude, longitude} = this._gclue.location;
+        // GWeather's offline city database: no extra lookup leaves the machine.
+        const nearest = GWeather.Location.get_world()?.find_nearest_city(latitude, longitude);
+        return {name: nearest?.get_city_name() ?? _('Your location'), latitude, longitude};
     }
 
     async _update() {
         if (!this._place) {
-            const city = this._city();
-            const geo = await this._getJson(
-                `https://geocoding-api.open-meteo.com/v1/search?count=1&language=${messagesLanguage()}` +
-                `&name=${encodeURIComponent(city)}`);
-            const hit = geo.results?.[0];
-            if (!hit) {
-                this._message(_('City “%s” not found').format(city));
+            let place;
+            try {
+                place = await this._resolvePlace();
+            } catch (e) {
+                if (!(e instanceof PlaceNotFound))
+                    throw e;
+                if (!this._stale)
+                    this._message(_('City “%s” not found').format(e.city));
                 return;
             }
-            this._place = {name: hit.name, latitude: hit.latitude, longitude: hit.longitude};
+            if (this._stale)
+                return;
+            this._place = place;
         }
 
         const {name, latitude, longitude} = this._place;
-        const f = await this._getJson(
+        this.actor.title.text = `${_('Weather')} · ${name}`.toUpperCase();
+        const f = await getJson(this._session,
             `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
             '&current=temperature_2m,weather_code,is_day' +
-            '&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1');
+            '&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1', this._cancellable);
+        if (this._stale)
+            return;
         this._fetchedAt = Date.now();
 
         const {label, icon} = describe(f.current.weather_code, f.current.is_day);
-        this.actor.title.text = `${_('Weather')} · ${name}`.toUpperCase();
         this._temp.text = `${Math.round(f.current.temperature_2m)}°`;
         /* Translators: condition · daily high and low, e.g. "Rain · high 28° low 17°" */
         this._sub.text = _('%s · high %s° low %s°').format(label,
@@ -134,7 +225,10 @@ export class WeatherWidget {
 
     destroy() {
         this._cancellable.cancel();
-        this._settings.disconnect(this._cityId);
+        this._locating?.cancel();
+        this._settingsIds.forEach(id => this._settings.disconnect(id));
+        this._location.disconnect(this._locationId);
+        this._gclue = null;
         this._session.abort();
         this.actor.destroy();
     }

@@ -201,7 +201,7 @@ Each widget is a module in `widgets/` that exposes:
 
 | Widget | Source | Refresh |
 |---|---|---|
-| Weather | Open-Meteo geocoding and forecast (libsoup 3) | On open, when the data is older than 30 minutes |
+| Weather | Open-Meteo forecast (libsoup 3). The place, in order: one picked in the preferences (`weather-location`), a city typed in 0.3 or earlier (`weather-city`), GeoClue when Location Services are on (named by GWeather's offline city list), the time zone's city. | On open, when the data is older than 30 minutes, and when the place changes |
 | Batteries | UPower over the system bus | Live, through `PropertiesChanged` and `DeviceAdded`/`DeviceRemoved` |
 | Calendar | GNOME Shell's `DBusEventSource` (the calendar server) | On open, plus change signals |
 | To-do | `~/.local/share/ledge/todo.json` through `JsonStore` | Written on every change |

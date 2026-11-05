@@ -241,3 +241,31 @@ class TodoTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WeatherTest(unittest.TestCase):
+    AUTOMATIC = "('', 0.0, 0.0)"
+
+    def setUp(self):
+        shell.close_panel()
+
+    def tearDown(self):
+        shell.set_setting("weather-location", self.AUTOMATIC)
+
+    def title(self):
+        return shell.state()["titles"].get("weather")
+
+    def test_picked_place_is_used(self):
+        # 0.3: the only choice was a typed city, and an empty one meant the
+        # time zone's city, so most of Brazil got São Paulo's weather.
+        shell.set_setting("weather-location", "('Campinas', -22.91, -47.06)")
+        shell.open_panel()
+        shell.wait_for(lambda: self.title() == "WEATHER · CAMPINAS", "Campinas in the title")
+
+    def test_last_place_wins_over_a_running_update(self):
+        shell.set_setting("weather-location", "('Curitiba', -25.43, -49.27)")
+        shell.open_panel()
+        shell.set_setting("weather-location", "('Recife', -8.05, -34.88)")
+        shell.wait_for(lambda: self.title() == "WEATHER · RECIFE", "Recife in the title")
+        time.sleep(3)  # long enough for a stale update to land
+        self.assertEqual(self.title(), "WEATHER · RECIFE")

@@ -18,11 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   <kbd>↑</kbd>/<kbd>↓</kbd> on a focused card; <kbd>−</kbd> to hide, and an
   "Add widgets" tray to bring hidden ones back. <kbd>Esc</kbd> leaves edit
   mode before it closes the panel (#6).
+- Weather location: search for a city by name in the preferences, with the
+  state and country of each match. Automatic location now uses where the
+  device is when Location Services are on, before falling back to the time
+  zone's city.
 - UI regression tests (`tests/ui`) that drive a headless GNOME Shell, run in
   CI on every push and pull request.
 
 ### Fixed
 
+- The weather showed the city named by the time zone, which can be far away:
+  `America/Sao_Paulo` covers most of Brazil's South and Southeast.
+- Edit mode tilted the cards, which rendered their text slanted, as if
+  italic, and its minus buttons made every card taller.
 - On systems with the `C` or `C.UTF-8` locale (minimal installs, containers),
   Ledge failed to enable at all: "C" is not a language tag. Found by the new
   CI tests.
@@ -37,6 +45,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.1] - 2026-11-05
 
 ### Fixed
+
+- The weather showed the city named by the time zone, which can be far away:
+  `America/Sao_Paulo` covers most of Brazil's South and Southeast.
+- Edit mode tilted the cards, which rendered their text slanted, as if
+  italic, and its minus buttons made every card taller.
 
 - To-do: checking off a task moved it to the end of the list, so the task
   under the pointer changed and the next click toggled a different one.
@@ -64,6 +77,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Zorin Taskbar put it at the bottom.
 
 ### Fixed
+
+- The weather showed the city named by the time zone, which can be far away:
+  `America/Sao_Paulo` covers most of Brazil's South and Southeast.
+- Edit mode tilted the cards, which rendered their text slanted, as if
+  italic, and its minus buttons made every card taller.
 
 - Buttons near the panel's right edge ignored clicks, including the settings
   button, a task's delete button, and the "next track" button. A scrolled box
@@ -94,6 +112,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `tools/screenshots/run.sh`.
 
 ### Fixed
+
+- The weather showed the city named by the time zone, which can be far away:
+  `America/Sao_Paulo` covers most of Brazil's South and Southeast.
+- Edit mode tilted the cards, which rendered their text slanted, as if
+  italic, and its minus buttons made every card taller.
 
 - Clicking outside the panel or pressing <kbd>Esc</kbd> did not close it. The
   listener was on the stage, which receives nothing while the panel holds its

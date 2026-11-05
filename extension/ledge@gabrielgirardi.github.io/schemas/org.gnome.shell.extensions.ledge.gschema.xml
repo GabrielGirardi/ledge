@@ -10,10 +10,15 @@
       <summary>Screen edge the panel opens from</summary>
       <description>Only a two-finger swipe from this touchpad edge opens the panel.</description>
     </key>
+    <key name="weather-location" type="(sdd)">
+      <default>('', 0.0, 0.0)</default>
+      <summary>Place used for weather</summary>
+      <description>Name, latitude, and longitude of a place picked in the preferences. An empty name means automatic: the device's location when Location Services are on, otherwise the city of the system time zone.</description>
+    </key>
     <key name="weather-city" type="s">
       <default>''</default>
-      <summary>City used for weather</summary>
-      <description>Empty uses the city of the system time zone.</description>
+      <summary>City typed for weather (Ledge 0.3 and earlier)</summary>
+      <description>Looked up by name when weather-location is empty. The preferences clear it when you pick a place.</description>
     </key>
     <key name="toggle-shortcut" type="as">
       <default><![CDATA[['<Super>t']]]></default>

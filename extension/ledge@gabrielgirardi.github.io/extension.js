@@ -746,6 +746,8 @@ class Ledge {
             cards: this._content.get_children().filter(a => a.name?.startsWith('ledge:card:'))
                 .map(a => a.name.slice('ledge:card:'.length)),
             editing: this._edit.active,
+            titles: Object.fromEntries(this._widgets.map(w =>
+                [w.actor.name.slice('ledge:card:'.length), w.actor.title.text])),
             pointer: global.get_pointer().slice(0, 2),
             overview: Main.overview.visible,
             targets,

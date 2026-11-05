@@ -29,6 +29,11 @@ access that the session user does not have by default. The udev rule grants
 that access for touchpads only, through the `uaccess` tag. The tag gives the
 user who is active on the seat an ACL on the device.
 
+The helper reads one touchpad. It prefers a built-in one (I²C, PS/2) over USB
+or Bluetooth, and it skips touchpads that belong to a game controller, which
+it recognizes by a joystick node on the same HID device. If the touchpad is
+missing or disappears, the helper retries every 3 seconds instead of exiting.
+
 The helper opens the device read-only and never calls `EVIOCGRAB`. libinput and
 the compositor keep receiving every event, so normal scrolling keeps working.
 

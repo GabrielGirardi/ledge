@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   button, a task's delete button, and the "next track" button. A scrolled box
   in GNOME 46 clips picking to a page narrower than the view.
 - The calendar showed an invitation twice when it was in two calendars.
+- With a game controller connected (for example a DualSense), the touchpad
+  helper could read the controller's touchpad instead of the laptop's, so the
+  gesture stopped working. Controller touchpads are now skipped, and built-in
+  touchpads win over USB and Bluetooth ones.
 - The touchpad helper waits for the touchpad to come back after suspend,
   instead of exiting and running into systemd's restart limit (#1).
 - Connecting or disconnecting a monitor while the panel is open no longer

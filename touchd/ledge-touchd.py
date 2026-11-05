@@ -16,8 +16,10 @@ Natural-scrolling settings do not affect these values: they are physical.
 
 import argparse
 import fcntl
+import glob
 import math
 import os
+import re
 import struct
 import sys
 
@@ -57,18 +59,41 @@ def absinfo(fd, code):
     return lo, hi, res
 
 
+def udev_props(node):
+    """udev properties of /dev/input/<node>, from udev's runtime database."""
+    rdev = os.stat(f"/dev/input/{node}").st_rdev
+    try:
+        with open(f"/run/udev/data/c{os.major(rdev)}:{os.minor(rdev)}") as f:
+            lines = f.read().splitlines()
+    except FileNotFoundError:
+        return {}
+    return dict(line[2:].split("=", 1) for line in lines if line.startswith("E:") and "=" in line)
+
+
+def in_game_controller(node):
+    """Controllers like the DualSense expose a touchpad next to a joystick on
+    the same HID device. Their touchpad is not where anyone swipes for Ledge."""
+    hid = os.path.realpath(f"/sys/class/input/{node}/device/..")
+    for sibling in glob.glob(os.path.join(hid, "input*", "event*")):
+        name = os.path.basename(sibling)
+        if os.path.exists(f"/dev/input/{name}") and udev_props(name).get("ID_INPUT_JOYSTICK") == "1":
+            return True
+    return False
+
+
 def find_touchpad():
-    for name in sorted(os.listdir("/dev/input")):
-        if not name.startswith("event"):
+    """The laptop's own touchpad if there is one, else an external one.
+    Game controller touchpads are never picked."""
+    candidates = []
+    for node in os.listdir("/dev/input"):
+        if not re.fullmatch(r"event\d+", node):
             continue
-        rdev = os.stat(f"/dev/input/{name}").st_rdev
-        try:
-            with open(f"/run/udev/data/c{os.major(rdev)}:{os.minor(rdev)}") as f:
-                if "E:ID_INPUT_TOUCHPAD=1" in f.read().splitlines():
-                    return f"/dev/input/{name}"
-        except FileNotFoundError:
-            pass
-    return None
+        props = udev_props(node)
+        if props.get("ID_INPUT_TOUCHPAD") != "1" or in_game_controller(node):
+            continue
+        external = props.get("ID_BUS") in ("usb", "bluetooth")
+        candidates.append((external, int(node[5:]), f"/dev/input/{node}"))
+    return min(candidates)[2] if candidates else None
 
 
 class Bus:

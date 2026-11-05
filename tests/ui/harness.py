@@ -56,10 +56,14 @@ class Shell:
         self.emit("Toggle")
 
     def warp(self, x, y):
+        """Moves the pointer and waits until it is there. Slow machines (CI
+        renders in software) can take a while, and an action that starts
+        early happens somewhere else."""
         self.emit("Warp", "(ii)", x, y)
-        time.sleep(0.15)
+        self.wait_for(lambda: self.state()["pointer"] == [x, y], f"pointer at {x},{y}")
 
     def click(self, x, y):
+        self.warp(x, y)
         self.emit("Click", "(ii)", x, y)
         time.sleep(0.35)
 
@@ -109,6 +113,7 @@ class Shell:
 
     def drag(self, x, y, dy, steps=20):
         """Press at (x, y), move dy pixels over `steps` frames, release."""
+        self.warp(x, y)
         self.emit("Drag", "(iiii)", x, y, dy, steps)
         time.sleep(steps * 0.02 + 1.0)
 

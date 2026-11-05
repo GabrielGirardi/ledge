@@ -737,6 +737,7 @@ class Ledge {
             hotEdges: this._barriers?.length ?? 0,
             widgets: this._widgets.map(w => w.actor.name.slice('ledge:card:'.length)),
             editing: this._edit.active,
+            pointer: global.get_pointer().slice(0, 2),
             targets,
         };
     }

@@ -21,8 +21,8 @@ export default class LedgePreferences extends ExtensionPreferences {
         panel.add(side);
 
         const indicator = new Adw.SwitchRow({
-            title: _('Top bar button'),
-            subtitle: _('Click it to open or close the panel'),
+            title: _('Panel button'),
+            subtitle: _('A button next to your system icons, wherever your bar is'),
         });
         settings.bind('show-indicator', indicator, 'active', 0);
         panel.add(indicator);

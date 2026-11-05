@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-03 21:02-0300\n"
+"POT-Creation-Date: 2026-11-05 13:00-0300\n"
 "PO-Revision-Date: 2026-11-03 20:07-0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,7 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:199
+#: extension/ledge@gabrielgirardi.github.io/extension.js:95
+msgid "Settings"
+msgstr "Configurações"
+
+#: extension/ledge@gabrielgirardi.github.io/extension.js:241
 msgid "Today"
 msgstr "Hoje"
 
@@ -42,12 +46,12 @@ msgid "Left"
 msgstr "Esquerda"
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:24
-msgid "Top bar button"
-msgstr "Botão na barra superior"
+msgid "Panel button"
+msgstr "Botão no painel"
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:25
-msgid "Click it to open or close the panel"
-msgstr "Clique para abrir ou fechar o painel"
+msgid "A button next to your system icons, wherever your bar is"
+msgstr "Um botão ao lado dos ícones do sistema, onde quer que esteja a sua barra"
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:31
 msgid "Keyboard shortcut (for example <Super>t)"
@@ -72,28 +76,28 @@ msgstr "Cidade"
 msgid "Calendar"
 msgstr "Agenda"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:50
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:59
 msgid "Nothing else today"
 msgstr "Nada mais hoje"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:68
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:77
 msgid "All day"
 msgstr "Dia todo"
 
 #. Translators: an event happening now; %s is its end time
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:71
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:80
 #, javascript-format
 msgid "Now · until %s"
 msgstr "Agora · até %s"
 
 #. Translators: event start and end times
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:74
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:83
 #, javascript-format
 msgid "%s – %s"
 msgstr "%s – %s"
 
 #. Translators: %s is the event time, e.g. "Tomorrow · 09:30 – 10:00"
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:77
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:86
 #, javascript-format
 msgid "Tomorrow · %s"
 msgstr "Amanhã · %s"
@@ -221,3 +225,5 @@ msgstr "Cidade “%s” não encontrada"
 #, javascript-format
 msgid "%s · high %s° low %s°"
 msgstr "%s · máx %s° mín %s°"
+
+

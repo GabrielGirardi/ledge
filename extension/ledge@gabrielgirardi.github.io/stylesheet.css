@@ -124,3 +124,15 @@
   min-width: 52px;
   text-align: right;
 }
+
+.ledge-header { spacing: 8px; }
+.ledge-header-button {
+  padding: 7px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+.ledge-header-button StIcon { icon-size: 16px; }
+.ledge-header-button:hover,
+.ledge-header-button:focus { color: #ffffff; background-color: rgba(255, 255, 255, 0.16); }
+.ledge-header-button:active { background-color: rgba(255, 255, 255, 0.24); }

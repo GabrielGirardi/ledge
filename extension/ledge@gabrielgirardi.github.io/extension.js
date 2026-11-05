@@ -40,8 +40,11 @@ function rubberBand(p) {
 }
 
 class Ledge {
-    constructor(settings) {
+    constructor(extension) {
+        const settings = extension.getSettings();
+        this._extension = extension;
         this._settings = settings;
+        this._monitorIndex = Main.layoutManager.primaryIndex;
         this._state = State.CLOSED;
         this._progress = 0;
         this._grab = null;
@@ -58,19 +61,46 @@ class Ledge {
         this._panel.add_child(this._glass.actor);
         this._panel.add_child(new St.Widget({style_class: 'ledge-tint', x_expand: true, y_expand: true}));
 
-        this._content = new St.BoxLayout({vertical: true, style_class: 'ledge-content', x_expand: true});
+        // GNOME 46's scroll view reports a horizontal page narrower than the
+        // view (it reserves room for a vertical scrollbar), and a scrolled box
+        // clips picking to that page, so the right ~38 px of every row ignored
+        // clicks while still painting. Clip on the scroll view's real
+        // allocation instead.
+        this._content = new St.BoxLayout({
+            vertical: true,
+            style_class: 'ledge-content',
+            x_expand: true,
+            clip_to_view: false,
+        });
         this._scroll = new St.ScrollView({
             style_class: 'ledge-scroll vfade',
+            clip_to_allocation: true,
             hscrollbar_policy: St.PolicyType.NEVER,
-            vscrollbar_policy: St.PolicyType.AUTOMATIC,
-            overlay_scrollbars: true,
+            // Scroll with the wheel or touchpad; the fade shows there is more.
+            vscrollbar_policy: St.PolicyType.EXTERNAL,
             x_expand: true,
             y_expand: true,
         });
+        const header = new St.BoxLayout({style_class: 'ledge-header'});
+        const heading = new St.BoxLayout({vertical: true, x_expand: true});
         this._weekday = new St.Label({style_class: 'ledge-weekday'});
         this._date = new St.Label({style_class: 'ledge-date'});
-        this._content.add_child(this._weekday);
-        this._content.add_child(this._date);
+        heading.add_child(this._weekday);
+        heading.add_child(this._date);
+        const settingsButton = new St.Button({
+            style_class: 'ledge-header-button',
+            can_focus: true,
+            y_align: Clutter.ActorAlign.START,
+            child: new St.Icon({icon_name: 'emblem-system-symbolic'}),
+            accessible_name: _('Settings'),
+        });
+        settingsButton.connect('clicked', () => {
+            this._closeNow();
+            this._extension.openPreferences();
+        });
+        header.add_child(heading);
+        header.add_child(settingsButton);
+        this._content.add_child(header);
 
         this._widgets = [
             new WeatherWidget(settings),
@@ -87,8 +117,17 @@ class Ledge {
         this._strip.add_child(this._panel);
         Main.layoutManager.addTopChrome(this._strip);
 
-        this._monitorsId = Main.layoutManager.connect('monitors-changed', () => this._relayout());
-        this._workareasId = global.display.connect('workareas-changed', () => this._relayout());
+        this._monitorsId = Main.layoutManager.connect('monitors-changed', () => {
+            // The monitor the panel is on may be gone; start over on the primary.
+            this._closeNow();
+            this._monitorIndex = Main.layoutManager.primaryIndex;
+            this._relayout();
+        });
+        this._workareasId = global.display.connect('workareas-changed', () => {
+            if (this._state === State.CLOSED)
+                this._relayout();
+        });
+
         this._settingsIds = [
             settings.connect('changed::side', () => {
                 if (this._state === State.CLOSED)
@@ -98,7 +137,7 @@ class Ledge {
         ];
         Main.wm.addKeybinding('toggle-shortcut', settings, Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW | Shell.ActionMode.POPUP,
-            () => this.toggle());
+            () => this.toggle('focus'));
         this._syncIndicator();
         this._signalIds = ['Begin', 'Update', 'End', 'Cancel'].map(name =>
             Gio.DBus.session.signal_subscribe(null, BUS_IFACE, name, BUS_PATH, null,
@@ -132,10 +171,13 @@ class Ledge {
     }
 
     _relayout() {
-        const monitor = Main.layoutManager.primaryMonitor;
+        const monitors = Main.layoutManager.monitors;
+        if (!monitors[this._monitorIndex])
+            this._monitorIndex = Main.layoutManager.primaryIndex;
+        const index = this._monitorIndex;
+        const monitor = monitors[index];
         if (!monitor)
             return;
-        const index = Main.layoutManager.primaryIndex;
         this._layoutSide = this._settings.get_string('side');
         const right = this._layoutSide === 'right';
         const wa = Main.layoutManager.getWorkAreaForMonitor(index);
@@ -202,30 +244,42 @@ class Ledge {
             style_class: 'system-status-icon',
         }));
         this._indicator.connect('button-press-event', () => {
-            this.toggle();
+            this.toggle('pointer');
             return Clutter.EVENT_STOP;
         });
         this._indicator.connect('touch-event', (_a, event) => {
             if (event.type() === Clutter.EventType.TOUCH_BEGIN)
-                this.toggle();
+                this.toggle('pointer');
             return Clutter.EVENT_STOP;
         });
         Main.panel.addToStatusArea('ledge-indicator', this._indicator, 0, 'right');
     }
 
-    toggle() {
+    /**
+     * @param {'pointer'|'focus'} where - the monitor under the pointer (gesture,
+     *   button), or the one holding the focused window (keyboard shortcut).
+     */
+    toggle(where = 'pointer') {
         const opening = this._state === State.CLOSED ||
             (this._state === State.SETTLING && this._target === 0);
         if (!opening) {
             this._settle(0, 0);
             return;
         }
-        this._open();
+        this._open(where);
         this._settle(1, 0);
     }
 
-    _open() {
+    _activeMonitor(where) {
+        const pointer = global.display.get_current_monitor();
+        if (where === 'focus')
+            return global.display.focus_window?.get_monitor() ?? pointer;
+        return pointer;
+    }
+
+    _open(where) {
         if (this._state === State.CLOSED) {
+            this._monitorIndex = this._activeMonitor(where);
             // Bars move and auto-hide, so measure the room on every open.
             this._relayout();
             this._prepareOpen();
@@ -307,7 +361,7 @@ class Ledge {
     _onBegin(edge) {
         if (this._state === State.CLOSED && edge !== this._settings.get_string('side'))
             return;
-        this._open();
+        this._open('pointer');
         this._stopSpring();
         this._dragOrigin = this._progress;
         this._state = State.DRAGGING;
@@ -377,6 +431,17 @@ class Ledge {
         spring.stop();
     }
 
+    /** Closes without animation, for when the panel must not linger. */
+    _closeNow() {
+        if (this._state === State.CLOSED)
+            return;
+        this._stopSpring();
+        this._progress = 0;
+        this._state = State.CLOSED;
+        this._apply();
+        this._releaseInput();
+    }
+
     _finish(target) {
         if (this._state !== State.SETTLING)
             return;
@@ -406,8 +471,16 @@ class Ledge {
                 this._apply();
             }),
             sub('Shot', path => this._shot(path).catch(logError)),
-            sub('Toggle', () => this.toggle()),
-            sub('State', () => console.log(`ledge-state ${Object.keys(State)[this._state]} ` +
+            sub('Toggle', () => this.toggle('pointer')),
+            sub('Pick', (x, y) => {
+                const chain = [];
+                for (let a = global.stage.get_actor_at_pos(Clutter.PickMode.REACTIVE, x, y); a; a = a.get_parent())
+                    chain.push(`${a.constructor.name}${a.style_class ? `.${a.style_class}` : ''}`);
+                console.log(`ledge-pick ${x},${y}: ${chain.slice(0, 6).join(' < ')}`);
+            }),
+            sub('Warp', (x, y) => Clutter.get_default_backend().get_default_seat().warp_pointer(x, y)),
+            sub('State', () => console.log(`ledge-state ${Object.keys(State)[this._state]} monitor=${this._monitorIndex} ` +
+                `strip=${this._strip.x},${this._strip.y} ` +
                 `progress=${this._progress.toFixed(3)} grab=${Boolean(this._grab)} ` +
                 `focus=${global.stage.get_key_focus()?.constructor.name ?? 'none'}`)),
             sub('Click', (x, y) => {
@@ -471,7 +544,7 @@ class Ledge {
 
 export default class LedgeExtension extends Extension {
     enable() {
-        this._ledge = new Ledge(this.getSettings());
+        this._ledge = new Ledge(this);
     }
 
     disable() {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-03 21:02-0300\n"
+"POT-Creation-Date: 2026-11-05 13:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:199
+#: extension/ledge@gabrielgirardi.github.io/extension.js:95
+msgid "Settings"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/extension.js:241
 msgid "Today"
 msgstr ""
 
@@ -42,11 +46,11 @@ msgid "Left"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:24
-msgid "Top bar button"
+msgid "Panel button"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:25
-msgid "Click it to open or close the panel"
+msgid "A button next to your system icons, wherever your bar is"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:31
@@ -71,28 +75,28 @@ msgstr ""
 msgid "Calendar"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:50
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:59
 msgid "Nothing else today"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:68
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:77
 msgid "All day"
 msgstr ""
 
 #. Translators: an event happening now; %s is its end time
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:71
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:80
 #, javascript-format
 msgid "Now · until %s"
 msgstr ""
 
 #. Translators: event start and end times
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:74
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:83
 #, javascript-format
 msgid "%s – %s"
 msgstr ""
 
 #. Translators: %s is the event time, e.g. "Tomorrow · 09:30 – 10:00"
-#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:77
+#: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:86
 #, javascript-format
 msgid "Tomorrow · %s"
 msgstr ""

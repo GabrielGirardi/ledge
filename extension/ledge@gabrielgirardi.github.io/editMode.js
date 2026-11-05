@@ -230,14 +230,21 @@ export class EditMode {
     }
 
     _move(card, delta) {
-        const cards = this._cards();
+        const cards = this._cards().filter(c => c.visible);
         const index = cards.indexOf(card);
         const to = index + delta;
         if (to < 0 || to >= cards.length)
             return false;
-        // The content's first child is the date header, so cards start at 1.
-        this._content.set_child_at_index(card, to + 1);
+        this._moveBefore(card, delta < 0 ? cards[to] : cards[to].get_next_sibling());
         return true;
+    }
+
+    /** Moves card right before `sibling` (or to the end of the cards). */
+    _moveBefore(card, sibling) {
+        if (sibling)
+            this._content.set_child_below_sibling(card, sibling);
+        else
+            this._content.set_child_above_sibling(card, this._cards().at(-1));
     }
 
     _dragTo(y) {
@@ -249,7 +256,7 @@ export class EditMode {
             this._still(drag.card);
             drag.card.add_style_pseudo_class('dragging');
         }
-        const cards = this._cards();
+        const cards = this._cards().filter(c => c.visible);
         const index = cards.indexOf(drag.card);
         const centerOf = card => {
             const [, top] = card.get_transformed_position();
@@ -263,7 +270,7 @@ export class EditMode {
         while (to < cards.length - 1 && y > centerOf(cards[to + 1]))
             to++;
         if (to !== index)
-            this._move(drag.card, to - index);
+            this._moveBefore(drag.card, to < index ? cards[to] : cards[to].get_next_sibling());
 
         const [, top] = drag.card.get_transformed_position();
         const resting = top - drag.card.translation_y;

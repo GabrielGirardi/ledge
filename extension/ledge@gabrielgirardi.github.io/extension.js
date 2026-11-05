@@ -655,12 +655,13 @@ class Ledge {
                     else if (i === 0)
                         this._devPointer.notify_button(t, Clutter.BUTTON_PRIMARY, Clutter.ButtonState.PRESSED);
                     else if (i <= steps)
-                        this._devPointer.notify_relative_motion(t, 0, dy / steps);
+                        seat.warp_pointer(x, Math.round(y + dy * i / steps));
                     else
                         this._devPointer.notify_button(t, Clutter.BUTTON_PRIMARY, Clutter.ButtonState.RELEASED);
                     return ++i <= steps + 1 ? GLib.SOURCE_CONTINUE : GLib.SOURCE_REMOVE;
                 });
             }),
+            sub('Overview', show => (show ? Main.overview.show() : Main.overview.hide())),
             sub('Warp', (x, y) => Clutter.get_default_backend().get_default_seat().warp_pointer(x, y)),
             sub('State', () => console.log(`ledge-state ${Object.keys(State)[this._state]} monitor=${this._monitorIndex} ` +
                 `strip=${this._strip.x},${this._strip.y} ` +

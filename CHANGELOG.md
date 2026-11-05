@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CI tests.
 - Edit mode: a fast drag left the card short of the pointer, because each
   motion event moved it one slot at most. Found by the CI tests.
+- Edit mode: a hidden card (Now Playing with nothing playing) could swallow a
+  move, so dragging or pressing an arrow seemed to do nothing.
 - The hot edge also works in the overview, which stock GNOME shows at login.
 - To-do: on a screen shorter than the panel, the list was squeezed to a row or
   two instead of the panel scrolling.

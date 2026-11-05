@@ -33,9 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install GNOME Shell 46
+        timeout-minutes: 12
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          # The runner's mirror sometimes stalls mid-download; time out and retry.
+          printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\n' | sudo tee /etc/apt/apt.conf.d/80-retries
           sudo apt-get update
           sudo -E apt-get install -y --no-install-recommends \
             -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \

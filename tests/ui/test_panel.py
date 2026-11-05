@@ -155,10 +155,17 @@ class WidgetsTest(unittest.TestCase):
         shell.wait_for(lambda: shell.state()["widgets"][0] == "screen-time", "screen-time first in two moves")
 
     def test_edit_keyboard_moves_the_focused_card(self):
+        # Moves skip cards with nothing to show (no batteries on the CI runner,
+        # nothing playing), so compare the visible cards only.
+        def visible():
+            st = shell.state()
+            return [c for c in st["cards"] if f"card:{c}" in st["targets"]]
+
         self.edit()
-        shell.click_target("card:weather")  # a press without moving focuses the card
+        first, second = visible()[:2]
+        shell.click_target(f"card:{first}")  # a press without moving focuses the card
         shell.key(DOWN)
-        shell.wait_for(lambda: shell.state()["widgets"][:2] == ["batteries", "weather"], "weather moved down")
+        shell.wait_for(lambda: visible()[:2] == [second, first], f"{first} moved below {second}")
 
     def test_cards_are_inert_while_editing(self):
         self.edit()

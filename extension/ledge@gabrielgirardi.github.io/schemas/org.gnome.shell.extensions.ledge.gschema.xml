@@ -19,6 +19,15 @@
       <default><![CDATA[['<Super>t']]]></default>
       <summary>Keyboard shortcut that opens and closes the panel</summary>
     </key>
+    <key name="widgets" type="as">
+      <default>['weather', 'batteries', 'calendar', 'todo', 'screen-time', 'media']</default>
+      <summary>Widgets shown in the panel, in order</summary>
+      <description>Widgets left out are not loaded at all.</description>
+    </key>
+    <key name="hot-edge" type="b">
+      <default>true</default>
+      <summary>Open the panel by pushing the pointer against the screen edge</summary>
+    </key>
     <key name="show-indicator" type="b">
       <default>true</default>
       <summary>Show a top bar button that opens and closes the panel</summary>

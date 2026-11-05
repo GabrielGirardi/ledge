@@ -6,6 +6,7 @@
 #   dev-signal.sh Click X Y              left click at stage coordinates
 #   dev-signal.sh Warp X Y               move the pointer (picks the active monitor)
 #   dev-signal.sh Pick X Y               log which actor is under a point
+#   dev-signal.sh Push DX STEPS          relative pointer motion, DX px per step
 #   dev-signal.sh Scroll X Y STEPS       wheel steps (negative scrolls up)
 #   dev-signal.sh Key KEYVAL             press a key (65307 is Escape)
 #   dev-signal.sh Type 'text\n'          type text; \n presses Return
@@ -24,6 +25,7 @@ case "${1:?signal name required}" in
   Toggle|State|Dump) emit "$1" ;;
   Warp) emit Warp "$2" "$3" ;;
   Pick) emit Pick "$2" "$3" ;;
+  Push) emit Push "$2" "$3" ;;
   Show) emit Show "$2" ;;
   Click) emit Click "$2" "$3" ;;
   Scroll) emit Scroll "$2" "$3" "int32 $4" ;;

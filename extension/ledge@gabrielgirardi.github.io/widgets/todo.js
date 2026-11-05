@@ -1,5 +1,6 @@
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
 import Pango from 'gi://Pango';
 import St from 'gi://St';
 
@@ -9,6 +10,21 @@ import {JsonStore} from '../store.js';
 import {cardShell} from './card.js';
 
 const MAX_LENGTH = 200;
+
+/**
+ * A scroll view whose minimum height is its natural height (which the theme
+ * caps with max-height). When the panel is taller than the screen, GNOME 46
+ * lays the panel's content out at minimum heights, and a plain scroll view's
+ * minimum is next to nothing: the list got squeezed to a row or two. With
+ * this, the panel scrolls instead.
+ */
+const UnsqueezableScrollView = GObject.registerClass(
+class UnsqueezableScrollView extends St.ScrollView {
+    vfunc_get_preferred_height(forWidth) {
+        const [, natural] = super.vfunc_get_preferred_height(forWidth);
+        return [natural, natural];
+    }
+});
 
 class TaskRow {
     constructor(item, {onToggle, onRemove}) {
@@ -74,8 +90,9 @@ export class TodoWidget {
         // Same picking fix as the panel's scroll view: clip on the scroll
         // view's allocation, not on the narrower page GNOME 46 reports.
         this._list = new St.BoxLayout({vertical: true, style_class: 'ledge-todo-list', clip_to_view: false});
-        this._scroll = new St.ScrollView({
+        this._scroll = new UnsqueezableScrollView({
             style_class: 'ledge-todo-scroll vfade',
+            name: 'ledge:todo-scroll',
             clip_to_allocation: true,
             hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.EXTERNAL,

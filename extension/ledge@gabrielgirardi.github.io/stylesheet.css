@@ -155,3 +155,45 @@
 .ledge-header-button:hover,
 .ledge-header-button:focus { color: #ffffff; background-color: rgba(255, 255, 255, 0.16); }
 .ledge-header-button:active { background-color: rgba(255, 255, 255, 0.24); }
+
+/* Edit mode */
+.ledge-done-button {
+  padding: 5px 14px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  background-color: #0a84ff;
+}
+.ledge-done-button:hover, .ledge-done-button:focus { background-color: #3d9bff; }
+.ledge-done-button:active { background-color: #0068d6; }
+
+.ledge-card:editing { border-color: rgba(255, 255, 255, 0.22); }
+.ledge-card:editing:focus { border-color: #64a8ff; }
+.ledge-card:dragging {
+  background-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+.ledge-card-hide {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background-color: rgba(255, 69, 58, 0.85);
+}
+.ledge-card-hide StIcon { icon-size: 12px; }
+.ledge-card-hide:hover, .ledge-card-hide:focus { background-color: #ff453a; }
+
+.ledge-edit-tray {
+  spacing: 6px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+}
+.ledge-edit-add { padding: 8px 10px; border-radius: 12px; color: #ffffff; background-color: rgba(255, 255, 255, 0.06); }
+.ledge-edit-add:hover, .ledge-edit-add:focus { background-color: rgba(255, 255, 255, 0.14); }
+.ledge-edit-add-row { spacing: 10px; }
+.ledge-edit-add-icon { icon-size: 14px; color: #64a8ff; }

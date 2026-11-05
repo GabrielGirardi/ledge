@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Starts a headless GNOME Shell (no window) with Ledge from this checkout and
-# development hooks enabled. Unlike nested.sh, the pointer is fully
+# Starts a headless GNOME Shell (no window) with Ledge from this checkout,
+# development hooks enabled, and its own data and config folders. Unlike nested.sh, the pointer is fully
 # controllable, so scripted clicks land where you aim them. Prints READY and
 # returns once Ledge is ACTIVE; stop it with: scripts/headless.sh --stop
 set -euo pipefail
@@ -27,7 +27,10 @@ monitors=()
 for size in ${LEDGE_MONITORS:-${LEDGE_NESTED_SIZE:-1600x1000}}; do
   monitors+=(--virtual-monitor "$size")
 done
-(XDG_DATA_HOME="$state/data" LEDGE_DEV=1 setsid dbus-run-session -- \
+# Private data and config: tests can change settings, add tasks, and log in to
+# no accounts without touching the developer's real session.
+mkdir -p "$state/config"
+(XDG_DATA_HOME="$state/data" XDG_CONFIG_HOME="$state/config" LEDGE_DEV=1 setsid dbus-run-session -- \
   gnome-shell --headless --wayland "${monitors[@]}" \
   > "$state/shell.log" 2>&1 &)
 

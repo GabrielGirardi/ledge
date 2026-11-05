@@ -32,6 +32,7 @@ ESCAPE = 65307
 class Shell:
     def __init__(self, monitors="1600x1000 1280x800"):
         shutil.rmtree(DATA, ignore_errors=True)
+        shutil.rmtree(STATE_DIR / "config", ignore_errors=True)
         env = dict(os.environ, LEDGE_MONITORS=monitors)
         subprocess.run([str(ROOT / "scripts" / "headless.sh")], check=True, env=env,
                        stdout=subprocess.DEVNULL)
@@ -91,6 +92,26 @@ class Shell:
     def pick(self, x, y):
         return self._query("Pick", GLib.Variant("(ii)", (x, y)))
 
+    def set_setting(self, key, value):
+        """Sets a Ledge setting inside the test shell's private config."""
+        env = dict(os.environ,
+                   DBUS_SESSION_BUS_ADDRESS=(STATE_DIR / "bus").read_text().strip(),
+                   XDG_CONFIG_HOME=str(STATE_DIR / "config"),
+                   GSETTINGS_SCHEMA_DIR=str(ROOT / "extension" / "ledge@gabrielgirardi.github.io" / "schemas"))
+        subprocess.run(["gsettings", "set", "org.gnome.shell.extensions.ledge", key, value],
+                       check=True, env=env)
+        time.sleep(0.3)
+
+    def push(self, dx, steps):
+        """Relative pointer motion: dx pixels per step, one step per frame."""
+        self.emit("Push", "(ii)", dx, steps)
+        time.sleep(steps * 0.02 + 0.6)
+
+    def drag(self, x, y, dy, steps=20):
+        """Press at (x, y), move dy pixels over `steps` frames, release."""
+        self.emit("Drag", "(iiii)", x, y, dy, steps)
+        time.sleep(steps * 0.02 + 1.0)
+
     def todos(self):
         try:
             return json.loads((DATA / "todo.json").read_text())["items"]
@@ -115,6 +136,10 @@ class Shell:
                              "panel open")
 
     def close_panel(self):
-        if self.state()["state"] != "CLOSED":
+        # Esc leaves edit mode first, so it may take two.
+        for _ in range(3):
+            if self.state()["state"] == "CLOSED":
+                return
             self.key(ESCAPE)
-            self.wait_for(lambda: self.state()["state"] == "CLOSED", "panel closed")
+            time.sleep(0.6)
+        self.wait_for(lambda: self.state()["state"] == "CLOSED", "panel closed")

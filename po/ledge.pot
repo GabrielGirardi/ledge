@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 13:40-0300\n"
+"POT-Creation-Date: 2026-11-05 14:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,61 +17,111 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:95
+#: extension/ledge@gabrielgirardi.github.io/editMode.js:166
+#, javascript-format
+msgid "Hide %s"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/editMode.js:206
+msgid "Add widgets"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/editMode.js:217
+#, javascript-format
+msgid "Add %s"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/extension.js:124
 msgid "Settings"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:241
+#: extension/ledge@gabrielgirardi.github.io/extension.js:136
+msgid "Edit widgets"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/extension.js:143
+msgid "Done"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/extension.js:328
 msgid "Today"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:13
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:15
 msgid "Panel"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:15
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:17
 msgid "Screen side"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:16
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:18
 msgid "The panel opens with a two-finger swipe from this touchpad edge"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:17
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:19
 msgid "Right"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:17
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:19
 msgid "Left"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:24
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:26
+msgid "Hot edge"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:27
+msgid "Push the pointer against the screen edge to open the panel"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:33
 msgid "Panel button"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:25
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:34
 msgid "A button next to your system icons, wherever your bar is"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:31
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:40
 msgid "Keyboard shortcut (for example <Super>t)"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:50
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:61
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:7
 #: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:41
 #: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:120
 msgid "Weather"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:51
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:62
 msgid "Data from Open-Meteo. Leave empty to use the city of your time zone."
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:54
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:65
 msgid "City"
 msgstr ""
 
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:79
+msgid "Widgets"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:80
+msgid ""
+"Hidden widgets are not loaded at all. You can also rearrange them from the "
+"panel."
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:115
+msgid "Move up"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:116
+msgid "Move down"
+msgstr ""
+
 #: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:21
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:9
 msgid "Calendar"
 msgstr ""
 
@@ -102,9 +152,21 @@ msgid "Tomorrow · %s"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:89
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:8
 msgid "Batteries"
 msgstr ""
 
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:10
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:72
+msgid "To-do"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:11
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:26
+msgid "Screen Time"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:12
 #: extension/ledge@gabrielgirardi.github.io/widgets/media.js:17
 msgid "Now Playing"
 msgstr ""
@@ -124,10 +186,6 @@ msgstr ""
 msgid "%dm"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:26
-msgid "Screen Time"
-msgstr ""
-
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:28
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:46
 msgid "Today, in apps"
@@ -141,32 +199,28 @@ msgstr ""
 msgid "Delete task"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:61
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:66
 msgid "Mark as not done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:61
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:66
 msgid "Mark as done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:67
-msgid "To-do"
-msgstr ""
-
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:84
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:89
 msgid "Add a task"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:95
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:101
 msgid "Clear completed"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:189
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:196
 msgid "All done"
 msgstr ""
 
 #. Translators: tasks finished out of all tasks, e.g. "2 of 5 done"
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:192
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:199
 #, javascript-format
 msgid "%d of %d done"
 msgstr ""

@@ -2,13 +2,16 @@ import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
+import Mtk from 'gi://Mtk';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
+import * as Layout from 'resource:///org/gnome/shell/ui/layout.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {EditMode} from './editMode.js';
 import {Glass} from './glass.js';
 import {timeLocale} from './locale.js';
 import {AgendaWidget} from './widgets/agenda.js';
@@ -17,6 +20,16 @@ import {MediaWidget} from './widgets/media.js';
 import {ScreenTimeWidget} from './widgets/screentime.js';
 import {TodoWidget} from './widgets/todo.js';
 import {WeatherWidget} from './widgets/weather.js';
+import {shownWidgets} from './widgets/catalog.js';
+
+const FACTORIES = {
+    'weather': settings => new WeatherWidget(settings),
+    'batteries': () => new BatteriesWidget(),
+    'calendar': () => new AgendaWidget(),
+    'todo': () => new TodoWidget(),
+    'screen-time': () => new ScreenTimeWidget(),
+    'media': () => new MediaWidget(),
+};
 
 const BUS_PATH = '/io/github/gabrielgirardi/Ledge/Touchpad';
 const BUS_IFACE = 'io.github.gabrielgirardi.Ledge.Touchpad1';
@@ -40,6 +53,12 @@ const OPEN_DISTANCE = 0.35;
 const FLING_VELOCITY = 1.2;
 const SPRING_STIFFNESS = 320;
 const SPRING_DAMPING_RATIO = 0.82;
+
+const HOT_EDGE_PRESSURE = 150;
+const HOT_EDGE_TIMEOUT_MS = 1000;
+const HOT_EDGE_INSET = 48;
+const BUTTONS_MASK = Clutter.ModifierType.BUTTON1_MASK | Clutter.ModifierType.BUTTON2_MASK |
+    Clutter.ModifierType.BUTTON3_MASK;
 
 const State = {CLOSED: 0, DRAGGING: 1, SETTLING: 2, OPEN: 3};
 
@@ -109,19 +128,39 @@ class Ledge {
             this._closeNow();
             this._extension.openPreferences();
         });
+        const editButton = new St.Button({
+            style_class: 'ledge-header-button',
+            can_focus: true,
+            y_align: Clutter.ActorAlign.START,
+            child: new St.Icon({icon_name: 'document-edit-symbolic'}),
+            accessible_name: _('Edit widgets'),
+            name: 'ledge:edit',
+        });
+        const doneButton = new St.Button({
+            style_class: 'ledge-done-button',
+            can_focus: true,
+            y_align: Clutter.ActorAlign.START,
+            label: _('Done'),
+            name: 'ledge:edit-done',
+            visible: false,
+        });
         header.add_child(heading);
+        header.add_child(editButton);
         header.add_child(settingsButton);
+        header.add_child(doneButton);
         this._content.add_child(header);
 
-        this._widgets = [
-            new WeatherWidget(settings),
-            new BatteriesWidget(),
-            new AgendaWidget(),
-            new TodoWidget(),
-            new ScreenTimeWidget(),
-            new MediaWidget(),
-        ];
-        this._widgets.forEach(w => this._content.add_child(w.actor));
+        this._edit = new EditMode(settings, this._content, () => {
+            editButton.visible = !this._edit.active;
+            settingsButton.visible = !this._edit.active;
+            doneButton.visible = this._edit.active;
+        });
+        editButton.connect('clicked', () => this._edit.enter());
+        doneButton.connect('clicked', () => this._edit.exit());
+
+        this._widgetById = new Map();
+        this._widgets = [];
+        this._syncWidgets();
         this._scroll.child = this._content;
         this._panel.add_child(this._scroll);
 
@@ -133,6 +172,7 @@ class Ledge {
             this._closeNow();
             this._monitorIndex = Main.layoutManager.primaryIndex;
             this._relayout();
+            this._syncHotEdge();
         });
         this._workareasId = global.display.connect('workareas-changed', () => {
             if (this._state === State.CLOSED)
@@ -143,13 +183,17 @@ class Ledge {
             settings.connect('changed::side', () => {
                 if (this._state === State.CLOSED)
                     this._relayout();
+                this._syncHotEdge();
             }),
+            settings.connect('changed::hot-edge', () => this._syncHotEdge()),
+            settings.connect('changed::widgets', () => this._syncWidgets()),
             settings.connect('changed::show-indicator', () => this._syncIndicator()),
         ];
         Main.wm.addKeybinding('toggle-shortcut', settings, Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW | Shell.ActionMode.POPUP,
             () => this.toggle('focus'));
         this._syncIndicator();
+        this._syncHotEdge();
         this._signalIds = ['Begin', 'Update', 'End', 'Cancel'].map(name =>
             Gio.DBus.session.signal_subscribe(null, BUS_IFACE, name, BUS_PATH, null,
                 Gio.DBusSignalFlags.NONE,
@@ -170,12 +214,43 @@ class Ledge {
         Main.wm.removeKeybinding('toggle-shortcut');
         this._indicator?.destroy();
         this._indicator = null;
+        this._removeHotEdge();
         Main.layoutManager.disconnect(this._monitorsId);
         global.display.disconnect(this._workareasId);
-        this._widgets.forEach(w => w.destroy());
+        this._edit.destroy();
+        this._widgetById.forEach(w => w.destroy());
+        this._widgetById.clear();
         this._glass.destroy();
         Main.layoutManager.removeChrome(this._strip);
         this._strip.destroy();
+    }
+
+    /**
+     * Makes the panel's widgets match the `widgets` setting: creates the ones
+     * that were added, destroys the ones that were removed (so a hidden widget
+     * costs nothing), and reorders the rest without rebuilding them.
+     */
+    _syncWidgets() {
+        const order = shownWidgets(this._settings);
+        for (const [id, widget] of this._widgetById) {
+            if (!order.includes(id)) {
+                widget.destroy();
+                this._widgetById.delete(id);
+            }
+        }
+        this._widgets = order.map((id, i) => {
+            let widget = this._widgetById.get(id);
+            if (!widget) {
+                widget = FACTORIES[id](this._settings);
+                widget.actor.name = `ledge:card:${id}`;
+                this._widgetById.set(id, widget);
+                this._content.add_child(widget.actor);
+            }
+            // Index 0 is the date header.
+            this._content.set_child_at_index(widget.actor, i + 1);
+            return widget;
+        });
+        this._edit?.refresh();
     }
 
     _inward() {
@@ -271,6 +346,59 @@ class Ledge {
      * @param {'pointer'|'focus'} where - the monitor under the pointer (gesture,
      *   button), or the one holding the focused window (keyboard shortcut).
      */
+    /**
+     * A pressure barrier on the configured edge of every monitor whose edge is
+     * the edge of the whole screen. Pushing the pointer against it opens the
+     * panel, like a hot corner. Edges shared with another monitor get no
+     * barrier, so the pointer can still cross between screens.
+     */
+    _syncHotEdge() {
+        this._removeHotEdge();
+        if (!this._settings.get_boolean('hot-edge'))
+            return;
+        const right = this._settings.get_string('side') === 'right';
+        const monitors = Main.layoutManager.monitors;
+        this._pressure = new Layout.PressureBarrier(HOT_EDGE_PRESSURE, HOT_EDGE_TIMEOUT_MS,
+            Shell.ActionMode.NORMAL);
+        this._pressure.setEventFilter(event => {
+            // Ignore drags, and fullscreen apps such as games and video.
+            const [, , mods] = global.get_pointer();
+            const index = global.display.get_monitor_index_for_rect(
+                new Mtk.Rectangle({x: Math.round(event.x), y: Math.round(event.y), width: 1, height: 1}));
+            return (mods & BUTTONS_MASK) !== 0 || Boolean(monitors[index]?.inFullscreen);
+        });
+        this._pressure.connect('trigger', () => {
+            if (this._state === State.CLOSED)
+                this.toggle('pointer');
+        });
+        this._barriers = [];
+        for (const m of monitors) {
+            const x = right ? m.x + m.width : m.x;
+            const shared = monitors.some(o => o !== m &&
+                (right ? o.x === x : o.x + o.width === x) &&
+                o.y < m.y + m.height && o.y + o.height > m.y);
+            if (shared || m.height <= 2 * HOT_EDGE_INSET)
+                continue;
+            const barrier = new Meta.Barrier({
+                backend: global.backend,
+                x1: x, y1: m.y + HOT_EDGE_INSET,
+                x2: x, y2: m.y + m.height - HOT_EDGE_INSET,
+                directions: right ? Meta.BarrierDirection.NEGATIVE_X : Meta.BarrierDirection.POSITIVE_X,
+            });
+            this._pressure.addBarrier(barrier);
+            this._barriers.push(barrier);
+        }
+    }
+
+    _removeHotEdge() {
+        if (!this._pressure)
+            return;
+        this._pressure.destroy();
+        this._barriers.forEach(b => b.destroy());
+        this._barriers = [];
+        this._pressure = null;
+    }
+
     toggle(where = 'pointer') {
         const opening = this._state === State.CLOSED ||
             (this._state === State.SETTLING && this._target === 0);
@@ -347,6 +475,9 @@ class Ledge {
     }
 
     _onCaptured(event) {
+        const edited = this._edit.handleEvent(event);
+        if (edited !== undefined)
+            return edited;
         switch (event.type()) {
         case Clutter.EventType.SCROLL:
             // Over the panel, scrolling scrolls the widgets. Elsewhere it is
@@ -452,6 +583,7 @@ class Ledge {
         this._state = State.CLOSED;
         this._apply();
         this._releaseInput();
+        this._edit.exit();
     }
 
     _finish(target) {
@@ -463,6 +595,7 @@ class Ledge {
         this._state = target ? State.OPEN : State.CLOSED;
         if (!target) {
             this._releaseInput();
+            this._edit.exit();
             if (this._layoutSide !== this._settings.get_string('side'))
                 this._relayout();
         }
@@ -497,6 +630,34 @@ class Ledge {
                 for (let a = global.stage.get_actor_at_pos(Clutter.PickMode.REACTIVE, x, y); a; a = a.get_parent())
                     chain.push(`${a.constructor.name}${a.style_class ? `.${a.style_class}` : ''}`);
                 console.log(`ledge-pick ${x},${y}: ${chain.slice(0, 6).join(' < ')}`);
+            }),
+            sub('Push', (dx, steps) => {
+                const seat = Clutter.get_default_backend().get_default_seat();
+                this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
+                let i = 0;
+                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
+                    this._devPointer.notify_relative_motion(GLib.get_monotonic_time(), dx, 0);
+                    return ++i < steps ? GLib.SOURCE_CONTINUE : GLib.SOURCE_REMOVE;
+                });
+            }),
+            sub('Drag', (x, y, dy, steps) => {
+                // Press at (x, y), move dy pixels over `steps` frames, release.
+                const seat = Clutter.get_default_backend().get_default_seat();
+                this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
+                seat.warp_pointer(x, y);
+                let i = -10; // let the warp land before pressing
+                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
+                    const t = GLib.get_monotonic_time();
+                    if (i < 0)
+                        ; // waiting
+                    else if (i === 0)
+                        this._devPointer.notify_button(t, Clutter.BUTTON_PRIMARY, Clutter.ButtonState.PRESSED);
+                    else if (i <= steps)
+                        this._devPointer.notify_relative_motion(t, 0, dy / steps);
+                    else
+                        this._devPointer.notify_button(t, Clutter.BUTTON_PRIMARY, Clutter.ButtonState.RELEASED);
+                    return ++i <= steps + 1 ? GLib.SOURCE_CONTINUE : GLib.SOURCE_REMOVE;
+                });
             }),
             sub('Warp', (x, y) => Clutter.get_default_backend().get_default_seat().warp_pointer(x, y)),
             sub('State', () => console.log(`ledge-state ${Object.keys(State)[this._state]} monitor=${this._monitorIndex} ` +
@@ -573,6 +734,9 @@ class Ledge {
             side: this._layoutSide,
             grab: Boolean(this._grab),
             focus: global.stage.get_key_focus()?.constructor.name ?? null,
+            hotEdges: this._barriers?.length ?? 0,
+            widgets: this._widgets.map(w => w.actor.name.slice('ledge:card:'.length)),
+            editing: this._edit.active,
             targets,
         };
     }

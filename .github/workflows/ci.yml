@@ -29,13 +29,16 @@ jobs:
 
   ui-tests:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: Install GNOME Shell 46
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo -E apt-get install -y --no-install-recommends \
+            -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \
             gnome-shell gnome-shell-extension-prefs dbus dbus-user-session \
             python3-gi gir1.2-glib-2.0 gettext libglib2.0-bin \
             mesa-utils libgl1-mesa-dri evolution-data-server

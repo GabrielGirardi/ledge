@@ -69,21 +69,37 @@
 
 .ledge-scroll { -st-vfade-offset: 24px; }
 
-.ledge-todo-list { spacing: 2px; padding-top: 2px; }
-.ledge-todo-row { spacing: 8px; border-radius: 10px; padding: 2px 4px 2px 0; }
-.ledge-todo-row:hover { background-color: rgba(255, 255, 255, 0.05); }
-.ledge-todo-check { padding: 4px; border-radius: 8px; color: #ffffff; }
-.ledge-todo-check StIcon { icon-size: 16px; }
-.ledge-todo-check:focus, .ledge-todo-remove:focus { background-color: rgba(255, 255, 255, 0.14); }
+.ledge-todo-scroll { max-height: 182px; -st-vfade-offset: 18px; }
+.ledge-todo-list { spacing: 2px; }
+
+.ledge-todo-row { spacing: 10px; padding: 5px 4px 5px 6px; border-radius: 10px; }
+.ledge-todo-row:hover { background-color: rgba(255, 255, 255, 0.06); }
+
+.ledge-todo-check {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+}
+.ledge-todo-check:hover { border-color: rgba(255, 255, 255, 0.85); }
+.ledge-todo-check:focus { border-color: #64a8ff; }
+.ledge-todo-check-icon { icon-size: 12px; color: rgba(0, 0, 0, 0); }
+.ledge-todo-check:checked { background-color: #0a84ff; border-color: #0a84ff; }
+.ledge-todo-check:checked .ledge-todo-check-icon { color: #ffffff; }
+
 .ledge-todo-text { color: #ffffff; font-size: 14px; }
-.ledge-todo-done { color: rgba(255, 255, 255, 0.4); }
-.ledge-todo-remove { padding: 4px; border-radius: 8px; color: rgba(255, 255, 255, 0.6); }
-.ledge-todo-remove StIcon { icon-size: 12px; }
-.ledge-todo-remove:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.12); }
+.ledge-todo-row:checked .ledge-todo-text { color: rgba(255, 255, 255, 0.42); }
+
+.ledge-todo-remove { padding: 5px; border-radius: 8px; color: rgba(255, 255, 255, 0.6); }
+.ledge-todo-remove StIcon { icon-size: 14px; }
+.ledge-todo-remove:hover { color: #ff6961; background-color: rgba(255, 69, 58, 0.16); }
+.ledge-todo-remove:focus { color: #ffffff; background-color: rgba(255, 255, 255, 0.14); }
+
 .ledge-todo-entry {
-  margin-top: 4px;
-  padding: 7px 10px;
-  border-radius: 10px;
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background-color: rgba(0, 0, 0, 0.18);
   color: #ffffff;
@@ -92,9 +108,12 @@
   selected-color: #ffffff;
   selection-background-color: rgba(10, 132, 255, 0.6);
 }
-.ledge-todo-entry:focus { border-color: rgba(10, 132, 255, 0.9); }
+.ledge-todo-entry:hover { border-color: rgba(255, 255, 255, 0.16); }
+.ledge-todo-entry:focus { border-color: rgba(10, 132, 255, 0.9); background-color: rgba(0, 0, 0, 0.26); }
 .ledge-todo-entry StLabel.hint-text { color: rgba(255, 255, 255, 0.4); }
-.ledge-todo-footer { padding-top: 4px; }
+.ledge-todo-entry-icon { icon-size: 14px; color: rgba(255, 255, 255, 0.5); padding-right: 8px; }
+.ledge-todo-entry:focus .ledge-todo-entry-icon { color: #64a8ff; }
+.ledge-todo-footer { padding: 6px 2px 0 2px; }
 .ledge-link-button {
   color: #64a8ff;
   font-size: 12px;

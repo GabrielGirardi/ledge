@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 13:00-0300\n"
+"POT-Creation-Date: 2026-11-05 13:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,37 +137,38 @@ msgstr ""
 msgid "Nothing tracked yet today"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:15
-msgid "To-do"
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:33
+msgid "Delete task"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:21
-msgid "Add a task"
-msgstr ""
-
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:31
-msgid "Clear completed"
-msgstr ""
-
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:89
-msgid "All done"
-msgstr ""
-
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:90
-#, javascript-format
-msgid "%d left"
-msgstr ""
-
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:100
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:61
 msgid "Mark as not done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:100
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:61
 msgid "Mark as done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:116
-msgid "Delete task"
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:67
+msgid "To-do"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:84
+msgid "Add a task"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:95
+msgid "Clear completed"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:189
+msgid "All done"
+msgstr ""
+
+#. Translators: tasks finished out of all tasks, e.g. "2 of 5 done"
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:192
+#, javascript-format
+msgid "%d of %d done"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:18

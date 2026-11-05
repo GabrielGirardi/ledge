@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- On systems with the `C` or `C.UTF-8` locale (minimal installs, containers),
+  Ledge failed to enable at all: "C" is not a language tag. Found by the new
+  CI tests.
 - To-do: on a screen shorter than the panel, the list was squeezed to a row or
   two instead of the panel scrolling.
 

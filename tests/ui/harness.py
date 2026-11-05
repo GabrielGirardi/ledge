@@ -37,6 +37,8 @@ class Shell:
         subprocess.run([str(ROOT / "scripts" / "headless.sh")], check=True, env=env,
                        stdout=subprocess.DEVNULL)
         address = (STATE_DIR / "bus").read_text().strip()
+        # A slow machine (CI) can hold a virtual key long enough to auto-repeat.
+        self.gsettings("org.gnome.desktop.peripherals.keyboard", "repeat", "false")
         self.bus = Gio.DBusConnection.new_for_address_sync(
             address,
             Gio.DBusConnectionFlags.AUTHENTICATION_CLIENT | Gio.DBusConnectionFlags.MESSAGE_BUS_CONNECTION,
@@ -96,15 +98,17 @@ class Shell:
     def pick(self, x, y):
         return self._query("Pick", GLib.Variant("(ii)", (x, y)))
 
-    def set_setting(self, key, value):
-        """Sets a Ledge setting inside the test shell's private config."""
+    def gsettings(self, schema, key, value):
+        """Sets a key inside the test shell's private config."""
         env = dict(os.environ,
                    DBUS_SESSION_BUS_ADDRESS=(STATE_DIR / "bus").read_text().strip(),
                    XDG_CONFIG_HOME=str(STATE_DIR / "config"),
                    GSETTINGS_SCHEMA_DIR=str(ROOT / "extension" / "ledge@gabrielgirardi.github.io" / "schemas"))
-        subprocess.run(["gsettings", "set", "org.gnome.shell.extensions.ledge", key, value],
-                       check=True, env=env)
+        subprocess.run(["gsettings", "set", schema, key, value], check=True, env=env)
         time.sleep(0.3)
+
+    def set_setting(self, key, value):
+        self.gsettings("org.gnome.shell.extensions.ledge", key, value)
 
     def push(self, dx, steps):
         """Relative pointer motion: dx pixels per step, one step per frame."""

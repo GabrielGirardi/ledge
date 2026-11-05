@@ -45,7 +45,8 @@ Swipe in from the touchpad edge and the panel follows your fingers. Let go
 past halfway, or flick quickly, and a spring finishes the motion. Swipe back,
 press <kbd>Esc</kbd>, or click anywhere outside the panel to close it.
 
-You can also press <kbd>Super</kbd>+<kbd>T</kbd> or click the button in the top bar.
+You can also press <kbd>Super</kbd>+<kbd>T</kbd> or click the Ledge button next to your
+system icons. The panel opens on the screen you are using.
 
 ## What's inside
 
@@ -132,13 +133,13 @@ udev rule.
 
 ## Configure
 
-Run `gnome-extensions prefs ledge@gabrielgirardi.github.io`, or open the
-Extensions app.
+Click the gear in the panel's top corner, run `gnome-extensions prefs
+ledge@gabrielgirardi.github.io`, or open the Extensions app.
 
 | Setting | Default | Notes |
 |---|---|---|
 | Screen side | Right | Only a swipe from this touchpad edge opens the panel. |
-| Top bar button | On | |
+| Panel button | On | Sits next to your system icons, wherever your bar is. |
 | Keyboard shortcut | `<Super>t` | Any GTK accelerator, for example `<Super><Shift>d`. |
 | Weather city | Empty | When empty, Ledge uses the city of your time zone. For example, `America/Sao_Paulo` gives São Paulo. |
 
@@ -194,7 +195,8 @@ state machine, and how the glass is rendered.
 - [x] Weather, batteries, calendar, to-do, screen time, and Now Playing widgets
 - [x] Keyboard shortcut, top bar button, left or right edge
 - [x] English and Brazilian Portuguese
-- [ ] **0.3:** a hot edge (push the pointer against the screen edge), opening on the monitor under the pointer, and choosing, reordering, and editing widgets
+- [x] Opens on the active monitor
+- [ ] **0.3:** a hot edge (push the pointer against the screen edge), and choosing, reordering, and editing widgets
 - [ ] **0.4:** GNOME Shell 47, 48, and 49
 - [ ] **0.5:** more widgets: phone battery (GSConnect), system stats, world clocks, reminders
 - [ ] **0.6:** extensions.gnome.org, AUR, Fedora COPR, `.deb`, and a Rust helper

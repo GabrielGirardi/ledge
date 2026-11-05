@@ -50,6 +50,7 @@ to check behavior from a script:
 
 ```sh
 ./scripts/headless.sh                         # prints READY and the log path
+LEDGE_MONITORS="1600x1000 1280x800" ./scripts/headless.sh   # two monitors
 ./scripts/dev-signal.sh Toggle                # open the panel
 ./scripts/dev-signal.sh Click 300 500         # click outside it
 ./scripts/dev-signal.sh State                 # log state, grab, and key focus
@@ -62,6 +63,8 @@ grep ledge-state "$XDG_RUNTIME_DIR/ledge-nested/shell.log"
 | `Toggle` | Same as the keyboard shortcut |
 | `Show P` | Pins the panel at a position from 0 (closed) to 1 (open) |
 | `Click X Y`, `Scroll X Y STEPS` | Real pointer events, through the same path as a mouse |
+| `Warp X Y` | Moves the pointer, which decides the active monitor |
+| `Pick X Y` | Logs the actor under a point and its parents. Use it when a click does not land where you expect. |
 | `Key KEYVAL`, `Type TEXT` | Real key events. `65307` is Escape; `\n` in the text presses Return. |
 | `Shot PATH` | Saves a PNG of the whole stage |
 | `State`, `Dump` | Log the panel state, or the allocation of every layer |

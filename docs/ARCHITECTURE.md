@@ -102,6 +102,24 @@ stage never fires while the grab is active.
 - **Scroll over the panel:** scrolls the widgets.
 - **Scroll elsewhere:** swallowed, so the window underneath does not move.
 
+### Monitor
+
+The panel opens on the active monitor. For the gesture and the panel button,
+that is the monitor under the pointer. For the keyboard shortcut, it is the
+monitor with the focused window. The monitor is chosen on every open. If the
+monitor layout changes while the panel is open, the panel closes and returns
+to the primary monitor.
+
+### Scrolling and picking
+
+The widgets live in an `St.ScrollView` with `clip_to_allocation`, and the
+content box has `clip_to_view: false`. In GNOME 46, the scroll view gives its
+child a horizontal page that is narrower than the view, because it reserves
+room for a vertical scrollbar. A scrolled box clips *picking*, but not
+painting, to that page. The result: the right ~38 px of every row was drawn
+but ignored clicks. Use the `Pick` development hook to check hit-testing after
+any layout change.
+
 ### Height
 
 The panel sizes to its content, up to the room between GNOME's panel and the

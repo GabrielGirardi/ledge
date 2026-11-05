@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A settings button in the panel's top corner opens the preferences.
+- The panel opens on the active monitor: the one under the pointer for the
+  gesture and the panel button, and the one with the focused window for the
+  keyboard shortcut.
+
+### Changed
+
+- The "Top bar button" setting is now "Panel button", because bars such as
+  Zorin Taskbar put it at the bottom.
+
+### Fixed
+
+- Buttons near the panel's right edge ignored clicks, including the settings
+  button, a task's delete button, and the "next track" button. A scrolled box
+  in GNOME 46 clips picking to a page narrower than the view.
+- The calendar showed an invitation twice when it was in two calendars.
+- The touchpad helper waits for the touchpad to come back after suspend,
+  instead of exiting and running into systemd's restart limit (#1).
+- Connecting or disconnecting a monitor while the panel is open no longer
+  leaves it off-screen (#4).
+
 ## [0.2.0] - 2026-11-03
 
 ### Added

@@ -231,6 +231,9 @@ class Tracker:
             print(f"end dx={self.dx:+.3f} vx={vx:+.2f}", file=sys.stderr)
 
 
+RETRY_S = 3
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("device", nargs="?", help="evdev node (default: autodetect)")
@@ -238,43 +241,64 @@ def main():
     ap.add_argument("--trace", action="store_true", help="print every raw frame")
     args = ap.parse_args()
 
-    path = args.device or find_touchpad()
-    if not path:
-        sys.exit("ledge-touchd: no touchpad found")
-    try:
-        fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
-    except PermissionError:
-        sys.exit(f"ledge-touchd: no read access to {path}. "
-                 "Install packaging/70-ledge-touchpad.rules (see README).")
-    print(f"ledge-touchd: reading {path}", file=sys.stderr)
-
-    tracker = Tracker(fd, Bus(), args.verbose, args.trace)
-
+    bus = Bus()
     loop = GLib.MainLoop()
-    failure = []
+    fatal = []
+    waiting = [False]
 
-    def on_input(_fd, cond):
+    def retry_later():
+        GLib.timeout_add_seconds(RETRY_S, lambda: attach() and False)
+
+    def attach():
+        """Opens the touchpad, or schedules another try. Touchpads on I2C can
+        vanish across suspend and come back with a new node; waiting here
+        instead of exiting keeps systemd's restart limit out of the picture."""
+        path = args.device or find_touchpad()
         try:
-            if cond & (GLib.IO_HUP | GLib.IO_ERR):
-                raise OSError("device went away")
-            data = os.read(fd, INPUT_EVENT.size * 64)
-        except BlockingIOError:
-            return True
-        except OSError as e:
-            # Exit non-zero so systemd restarts us and we pick the device up again.
-            failure.append(f"ledge-touchd: lost {path}: {e}")
+            if not path:
+                raise FileNotFoundError("no touchpad found")
+            fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+            tracker = Tracker(fd, bus, args.verbose, args.trace)
+        except PermissionError:
+            fatal.append(f"ledge-touchd: no read access to {path}. "
+                         "Install packaging/70-ledge-touchpad.rules (see README).")
             loop.quit()
             return False
-        for i in range(0, len(data) - INPUT_EVENT.size + 1, INPUT_EVENT.size):
-            tracker.handle(*INPUT_EVENT.unpack_from(data, i))
+        except OSError as e:
+            if not waiting[0]:
+                print(f"ledge-touchd: {e}; waiting for a touchpad", file=sys.stderr)
+                waiting[0] = True
+            retry_later()
+            return False
+        waiting[0] = False
+        print(f"ledge-touchd: reading {path}", file=sys.stderr)
+
+        def on_input(_fd, cond):
+            try:
+                if cond & (GLib.IO_HUP | GLib.IO_ERR):
+                    raise OSError("device went away")
+                data = os.read(fd, INPUT_EVENT.size * 64)
+            except BlockingIOError:
+                return True
+            except OSError as e:
+                print(f"ledge-touchd: lost {path}: {e}; waiting for it to come back", file=sys.stderr)
+                tracker.abort()
+                os.close(fd)
+                retry_later()
+                return False
+            for i in range(0, len(data) - INPUT_EVENT.size + 1, INPUT_EVENT.size):
+                tracker.handle(*INPUT_EVENT.unpack_from(data, i))
+            return True
+
+        GLib.io_add_watch(fd, GLib.PRIORITY_HIGH, GLib.IO_IN | GLib.IO_HUP | GLib.IO_ERR, on_input)
         return True
 
-    GLib.io_add_watch(fd, GLib.PRIORITY_HIGH, GLib.IO_IN | GLib.IO_HUP | GLib.IO_ERR, on_input)
+    attach()
     GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, 2, loop.quit)
     GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, 15, loop.quit)
     loop.run()
-    if failure:
-        sys.exit(failure[0])
+    if fatal:
+        sys.exit(fatal[0])
 
 
 if __name__ == "__main__":

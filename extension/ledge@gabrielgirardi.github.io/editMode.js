@@ -1,7 +1,4 @@
 import Clutter from 'gi://Clutter';
-import GLib from 'gi://GLib';
-
-const debug = msg => GLib.getenv('LEDGE_DEV') && console.log(`ledge-edit ${msg}`);
 import St from 'gi://St';
 
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -90,7 +87,6 @@ export class EditMode {
                 const [, y] = event.get_coords();
                 const [, top] = card.get_transformed_position();
                 this._drag = {card, startY: y, grabOffset: y - top, moved: false};
-                debug(`press ${card.name} y=${y}`);
                 card.grab_key_focus();
             }
             // While editing, cards are things to move, not to use.
@@ -112,7 +108,6 @@ export class EditMode {
     }
 
     _onKey(symbol) {
-        debug(`key ${symbol}`);
         if (symbol === Clutter.KEY_Escape) {
             this.exit();
             return Clutter.EVENT_STOP;
@@ -235,7 +230,6 @@ export class EditMode {
     }
 
     _move(card, delta) {
-        debug(`move ${card.name} ${delta} ${new Error().stack.split('\n')[1]}`);
         const cards = this._cards().filter(c => c.visible);
         const index = cards.indexOf(card);
         const to = index + delta;
@@ -255,7 +249,6 @@ export class EditMode {
 
     _dragTo(y) {
         const drag = this._drag;
-        debug(`motion y=${y} moved=${drag.moved}`);
         if (!drag.moved) {
             if (Math.abs(y - drag.startY) < DRAG_THRESHOLD)
                 return;
@@ -286,7 +279,6 @@ export class EditMode {
 
     _endDrag(save) {
         const drag = this._drag;
-        debug(`release moved=${drag?.moved}`);
         if (!drag)
             return;
         this._drag = null;

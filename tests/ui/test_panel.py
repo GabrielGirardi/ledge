@@ -91,10 +91,15 @@ class HotEdgeTest(unittest.TestCase):
         self.assertEqual(shell.state()["state"], "CLOSED")
 
 
+DEFAULT_ORDER = ["weather", "batteries", "calendar", "todo", "screen-time", "media"]
+
+
 class WidgetsTest(unittest.TestCase):
     def setUp(self):
         shell.close_panel()
         shell.set_setting("widgets", DEFAULT_WIDGETS)
+        shell.wait_for(lambda: (s := shell.state())["widgets"] == DEFAULT_ORDER and s["cards"] == DEFAULT_ORDER,
+                       "default widgets, in the setting and on screen")
         shell.warp(800, 500)
 
     def tearDown(self):
@@ -110,14 +115,26 @@ class WidgetsTest(unittest.TestCase):
         shell.set_setting("widgets", "['todo', 'weather']")
         st = shell.open_panel()
         self.assertEqual(st["widgets"], ["todo", "weather"])
+        self.assertEqual(st["cards"], ["todo", "weather"])
         self.assertNotIn("card:batteries", st["targets"], "a hidden widget must not exist")
+
+    def test_reorder_from_settings_while_editing(self):
+        # The screen must follow the setting even with the edit tray present.
+        self.edit()
+        shell.click_target("hide:weather")  # the tray appears among the children
+        shell.wait_for(lambda: "add:weather" in shell.state()["targets"], "tray")
+        shell.set_setting("widgets", "['todo', 'calendar', 'batteries']")
+        st = shell.wait_for(lambda: (s := shell.state())["widgets"] == ["todo", "calendar", "batteries"] and s,
+                            "new order")
+        self.assertEqual(st["cards"], ["todo", "calendar", "batteries"])
 
     def test_edit_hide_and_add_back(self):
         self.edit()
         shell.click_target("hide:weather")
         shell.wait_for(lambda: "weather" not in shell.state()["widgets"], "weather hidden")
         shell.click_target("add:weather")
-        shell.wait_for(lambda: shell.state()["widgets"][-1] == "weather", "weather added at the end")
+        st = shell.wait_for(lambda: (s := shell.state())["widgets"][-1] == "weather" and s, "weather added at the end")
+        self.assertEqual(st["cards"], st["widgets"], "the screen must follow the setting")
 
     def test_edit_drag_reorders(self):
         self.edit()

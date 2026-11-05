@@ -238,7 +238,11 @@ class Ledge {
                 this._widgetById.delete(id);
             }
         }
-        this._widgets = order.map((id, i) => {
+        // Place each card right after the previous one (the first after the
+        // date header). Absolute indexes went wrong whenever something else
+        // sat among the cards, such as the edit-mode tray.
+        let previous = this._content.get_first_child();
+        this._widgets = order.map(id => {
             let widget = this._widgetById.get(id);
             if (!widget) {
                 widget = FACTORIES[id](this._settings);
@@ -246,8 +250,8 @@ class Ledge {
                 this._widgetById.set(id, widget);
                 this._content.add_child(widget.actor);
             }
-            // Index 0 is the date header.
-            this._content.set_child_at_index(widget.actor, i + 1);
+            this._content.set_child_above_sibling(widget.actor, previous);
+            previous = widget.actor;
             return widget;
         });
         this._edit?.refresh();
@@ -739,6 +743,8 @@ class Ledge {
             focus: global.stage.get_key_focus()?.constructor.name ?? null,
             hotEdges: this._barriers?.length ?? 0,
             widgets: this._widgets.map(w => w.actor.name.slice('ledge:card:'.length)),
+            cards: this._content.get_children().filter(a => a.name?.startsWith('ledge:card:'))
+                .map(a => a.name.slice('ledge:card:'.length)),
             editing: this._edit.active,
             pointer: global.get_pointer().slice(0, 2),
             overview: Main.overview.visible,

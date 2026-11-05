@@ -40,7 +40,16 @@ export class AgendaWidget {
         const [begin, end] = this._range;
         const now = new Date();
         const tomorrow = new Date(begin.getTime() + DAY_MS);
-        const upcoming = this._source.getEvents(begin, end).filter(e => e.end > now);
+        // An invitation that lives in two calendars (say, personal and work)
+        // arrives twice with different ids; show it once.
+        const seen = new Set();
+        const upcoming = this._source.getEvents(begin, end).filter(e => {
+            const key = `${e.summary}\u0000${e.date.getTime()}\u0000${e.end.getTime()}`;
+            if (e.end <= now || seen.has(key))
+                return false;
+            seen.add(key);
+            return true;
+        });
         const today = upcoming.filter(e => e.date < tomorrow).slice(0, MAX_EVENTS);
 
         if (today.length) {

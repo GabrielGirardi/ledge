@@ -26,3 +26,27 @@ jobs:
         with:
           name: ledge-extension
           path: dist/*.zip
+
+  ui-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GNOME Shell 46
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gnome-shell gnome-shell-extension-prefs dbus dbus-user-session \
+            python3-gi gir1.2-glib-2.0 gettext libglib2.0-bin \
+            mesa-utils libgl1-mesa-dri evolution-data-server
+      - name: UI tests
+        run: |
+          export XDG_RUNTIME_DIR="$RUNNER_TEMP/xdg"
+          mkdir -p -m 0700 "$XDG_RUNTIME_DIR"
+          ./tests/ui/run.sh
+      - name: Upload GNOME Shell log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gnome-shell-log
+          path: ${{ runner.temp }}/xdg/ledge-nested/shell.log

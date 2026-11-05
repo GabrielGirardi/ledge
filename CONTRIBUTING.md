@@ -76,6 +76,27 @@ Both shells use a private data folder (`$XDG_RUNTIME_DIR/ledge-nested/data`).
 An installed copy of Ledge stays untouched, and the to-do list and screen
 time you see in them are separate from your real ones.
 
+### UI tests
+
+`tests/ui/` drives a headless GNOME Shell through the development hooks and
+checks the result. It covers opening and closing, picking (whether clicks land
+on what is drawn), multi-monitor placement, and the to-do list. CI runs it on
+every push and pull request.
+
+```sh
+./tests/ui/run.sh                                     # everything, about a minute
+./tests/ui/run.sh test_panel.TodoTest                 # one class
+```
+
+Tests click actors by name, not by pixel. Give anything a test needs to reach
+a name that starts with `ledge:` (for example `name: 'ledge:gear'`). In
+development mode, the extension's `DevQuery1.GetState()` reports where every
+such actor is, together with the panel state.
+
+When you fix a bug that users can see, add a test that fails without the fix,
+and say in its comment which version had the bug. Before you push, check that
+the test does fail: put the bug back and run it.
+
 ### Gesture helper
 
 To see what the helper detects, run it in the foreground:

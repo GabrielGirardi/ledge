@@ -11,10 +11,10 @@ step "JavaScript syntax"
 while IFS= read -r f; do node --check "$f" || fail "$f"; done < <(find "$ext" -name '*.js')
 
 step "Python syntax"
-for f in "$here/touchd/ledge-touchd.py" "$here"/tools/screenshots/*.py; do
+for f in "$here/touchd/ledge-touchd.py" "$here"/tools/screenshots/*.py "$here"/tests/ui/*.py; do
   python3 -m py_compile "$f" || fail "$f"
 done
-find "$here/touchd" "$here/tools" -name __pycache__ -type d -exec rm -rf {} +
+find "$here/touchd" "$here/tools" "$here/tests" -name __pycache__ -type d -exec rm -rf {} +
 
 step "Shell scripts"
 for f in "$here"/scripts/*.sh "$here"/tools/screenshots/*.sh; do bash -n "$f" || fail "$f"; done

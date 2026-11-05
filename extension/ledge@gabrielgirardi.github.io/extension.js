@@ -21,6 +21,16 @@ import {WeatherWidget} from './widgets/weather.js';
 const BUS_PATH = '/io/github/gabrielgirardi/Ledge/Touchpad';
 const BUS_IFACE = 'io.github.gabrielgirardi.Ledge.Touchpad1';
 const DEV_IFACE = 'io.github.gabrielgirardi.Ledge.Dev1';
+const DEV_QUERY_PATH = '/io/github/gabrielgirardi/Ledge/Dev';
+const DEV_QUERY_XML = `<node>
+  <interface name="io.github.gabrielgirardi.Ledge.DevQuery1">
+    <method name="GetState"><arg type="s" direction="out" name="json"/></method>
+    <method name="Pick">
+      <arg type="i" direction="in" name="x"/><arg type="i" direction="in" name="y"/>
+      <arg type="s" direction="out" name="chain"/>
+    </method>
+  </interface>
+</node>`;
 
 const PANEL_WIDTH = 380;
 const PANEL_RADIUS = 26;
@@ -84,7 +94,7 @@ class Ledge {
         const header = new St.BoxLayout({style_class: 'ledge-header'});
         const heading = new St.BoxLayout({vertical: true, x_expand: true});
         this._weekday = new St.Label({style_class: 'ledge-weekday'});
-        this._date = new St.Label({style_class: 'ledge-date'});
+        this._date = new St.Label({style_class: 'ledge-date', name: 'ledge:date'});
         heading.add_child(this._weekday);
         heading.add_child(this._date);
         const settingsButton = new St.Button({
@@ -93,6 +103,7 @@ class Ledge {
             y_align: Clutter.ActorAlign.START,
             child: new St.Icon({icon_name: 'emblem-system-symbolic'}),
             accessible_name: _('Settings'),
+            name: 'ledge:gear',
         });
         settingsButton.connect('clicked', () => {
             this._closeNow();
@@ -154,6 +165,7 @@ class Ledge {
         this._stopSpring();
         this._releaseInput();
         this._signalIds.forEach(id => Gio.DBus.session.signal_unsubscribe(id));
+        this._devQuery?.unexport();
         this._settingsIds.forEach(id => this._settings.disconnect(id));
         Main.wm.removeKeybinding('toggle-shortcut');
         this._indicator?.destroy();
@@ -459,6 +471,14 @@ class Ledge {
     // Development hooks, enabled only with LEDGE_DEV set (scripts/nested.sh):
     // Show(d progress) pins the panel at a progress; Shot(s path) saves a PNG of the stage.
     _subscribeDev() {
+        // Queries for automated tests (tests/ui): state, and where every actor
+        // named "ledge:*" is, so tests click by name rather than by pixel.
+        this._devQuery = Gio.DBusExportedObject.wrapJSObject(DEV_QUERY_XML, {
+            GetState: () => JSON.stringify(this._devState()),
+            Pick: (x, y) => this._devPick(x, y),
+        });
+        this._devQuery.export(Gio.DBus.session, DEV_QUERY_PATH);
+
         const sub = (name, handler) => Gio.DBus.session.signal_subscribe(null, DEV_IFACE, name, BUS_PATH,
             null, Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => handler(...params.deep_unpack()));
         this._signalIds.push(
@@ -533,6 +553,35 @@ class Ledge {
                         `opacity=${actor.opacity} effects=${actor.get_effects().map(e => e.constructor.name)}`);
                 }
             }));
+    }
+
+    _devState() {
+        const targets = {};
+        const walk = actor => {
+            if (actor.name?.startsWith('ledge:') && actor.mapped) {
+                const e = actor.get_transformed_extents();
+                targets[actor.name.slice(6)] = [Math.round(e.get_x() + e.get_width() / 2),
+                    Math.round(e.get_y() + e.get_height() / 2), Math.round(e.get_width()), Math.round(e.get_height())];
+            }
+            actor.get_children().forEach(walk);
+        };
+        walk(this._strip);
+        return {
+            state: Object.keys(State)[this._state],
+            progress: this._progress,
+            monitor: this._monitorIndex,
+            side: this._layoutSide,
+            grab: Boolean(this._grab),
+            focus: global.stage.get_key_focus()?.constructor.name ?? null,
+            targets,
+        };
+    }
+
+    _devPick(x, y) {
+        const chain = [];
+        for (let a = global.stage.get_actor_at_pos(Clutter.PickMode.REACTIVE, x, y); a; a = a.get_parent())
+            chain.push(a.name || `${a.constructor.name}${a.style_class ? `.${a.style_class}` : ''}`);
+        return chain.join(' < ');
     }
 
     async _shot(path) {

@@ -48,6 +48,11 @@ class TaskRow {
         this.update(item);
     }
 
+    setIndex(index) {
+        this._check.name = `ledge:todo-check:${index}`;
+        this._remove.name = `ledge:todo-trash:${index}`;
+    }
+
     update(item) {
         const escaped = GLib.markup_escape_text(item.text, -1);
         this._label.clutter_text.set_markup(item.done ? `<s>${escaped}</s>` : escaped);
@@ -85,6 +90,7 @@ export class TodoWidget {
             can_focus: true,
             x_expand: true,
             primary_icon: new St.Icon({icon_name: 'list-add-symbolic', style_class: 'ledge-todo-entry-icon'}),
+            name: 'ledge:todo-entry',
         });
         this._entry.clutter_text.max_length = MAX_LENGTH;
         this._entry.clutter_text.connect('activate', () => this._add());
@@ -92,7 +98,7 @@ export class TodoWidget {
 
         this._footer = new St.BoxLayout({style_class: 'ledge-todo-footer'});
         this._summary = new St.Label({style_class: 'ledge-card-sub', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
-        this._clear = new St.Button({style_class: 'ledge-link-button', label: _('Clear completed'), can_focus: true});
+        this._clear = new St.Button({style_class: 'ledge-link-button', label: _('Clear completed'), can_focus: true, name: 'ledge:todo-clear'});
         this._clear.connect('clicked', () => this._clearDone());
         this._footer.add_child(this._summary);
         this._footer.add_child(this._clear);
@@ -172,6 +178,7 @@ export class TodoWidget {
                 this._rows.set(item.id, row);
             }
             row.update(item);
+            row.setIndex(index);
             if (this._list.get_child_at_index(index) !== row.actor) {
                 if (row.actor.get_parent())
                     this._list.set_child_at_index(row.actor, index);

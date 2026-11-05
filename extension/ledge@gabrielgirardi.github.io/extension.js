@@ -358,8 +358,10 @@ class Ledge {
             return;
         const right = this._settings.get_string('side') === 'right';
         const monitors = Main.layoutManager.monitors;
+        // Overview too: stock GNOME starts in the overview, and the keyboard
+        // shortcut already works there.
         this._pressure = new Layout.PressureBarrier(HOT_EDGE_PRESSURE, HOT_EDGE_TIMEOUT_MS,
-            Shell.ActionMode.NORMAL);
+            Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW);
         this._pressure.setEventFilter(event => {
             // Ignore drags, and fullscreen apps such as games and video.
             const [, , mods] = global.get_pointer();
@@ -738,6 +740,7 @@ class Ledge {
             widgets: this._widgets.map(w => w.actor.name.slice('ledge:card:'.length)),
             editing: this._edit.active,
             pointer: global.get_pointer().slice(0, 2),
+            overview: Main.overview.visible,
             targets,
         };
     }

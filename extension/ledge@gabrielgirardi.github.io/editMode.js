@@ -255,10 +255,15 @@ export class EditMode {
             const [, top] = card.get_transformed_position();
             return top - card.translation_y + card.height / 2;
         };
-        if (index > 0 && y < centerOf(cards[index - 1]))
-            this._move(drag.card, -1);
-        else if (index < cards.length - 1 && y > centerOf(cards[index + 1]))
-            this._move(drag.card, 1);
+        // A fast drag (or a busy machine) delivers sparse motion events; walk
+        // past every neighbour the pointer crossed, not just one per event.
+        let to = index;
+        while (to > 0 && y < centerOf(cards[to - 1]))
+            to--;
+        while (to < cards.length - 1 && y > centerOf(cards[to + 1]))
+            to++;
+        if (to !== index)
+            this._move(drag.card, to - index);
 
         const [, top] = drag.card.get_transformed_position();
         const resting = top - drag.card.translation_y;

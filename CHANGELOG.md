@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - On systems with the `C` or `C.UTF-8` locale (minimal installs, containers),
   Ledge failed to enable at all: "C" is not a language tag. Found by the new
   CI tests.
+- Edit mode: a fast drag left the card short of the pointer, because each
+  motion event moved it one slot at most. Found by the CI tests.
+- The hot edge also works in the overview, which stock GNOME shows at login.
 - To-do: on a screen shorter than the panel, the list was squeezed to a row or
   two instead of the panel scrolling.
 

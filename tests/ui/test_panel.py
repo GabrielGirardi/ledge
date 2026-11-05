@@ -127,6 +127,16 @@ class WidgetsTest(unittest.TestCase):
         shell.drag(x, y, top + 10 - y)
         shell.wait_for(lambda: shell.state()["widgets"][0] == "screen-time", "screen-time first")
 
+    def test_edit_fast_drag_crosses_several_cards(self):
+        # 0.4 dev: one motion event moved a card one slot at most, so a quick
+        # drag (or a slow machine) left the card short of the pointer.
+        self.edit()
+        t = shell.state()["targets"]
+        x, y, _w, _h = t["card:screen-time"]
+        top = t["card:weather"][1] - t["card:weather"][3] // 2
+        shell.drag(x, y, top + 10 - y, steps=2)
+        shell.wait_for(lambda: shell.state()["widgets"][0] == "screen-time", "screen-time first in two moves")
+
     def test_edit_keyboard_moves_the_focused_card(self):
         self.edit()
         shell.click_target("card:weather")  # a press without moving focuses the card

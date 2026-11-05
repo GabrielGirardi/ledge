@@ -33,11 +33,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install GNOME Shell 46
-        timeout-minutes: 12
+        timeout-minutes: 15
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          # The runner's mirror sometimes stalls mid-download; time out and retry.
+          # The runner's Azure mirror has been crawling; use the main archive,
+          # and time out and retry anything that stalls.
+          sudo sed -i 's|http://azure.archive.ubuntu.com|http://archive.ubuntu.com|g' \
+            /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true
+          sudo sed -i 's|http://azure.archive.ubuntu.com|http://archive.ubuntu.com|g' /etc/apt/sources.list || true
           printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\n' | sudo tee /etc/apt/apt.conf.d/80-retries
           sudo apt-get update
           sudo -E apt-get install -y --no-install-recommends \

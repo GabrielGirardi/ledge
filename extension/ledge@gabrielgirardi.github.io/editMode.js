@@ -5,17 +5,19 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {CATALOG, shownWidgets} from './widgets/catalog.js';
 
-const WIGGLE_DEGREES = 0.7;
 const DRAG_THRESHOLD = 6;
 
 /**
- * iOS-style editing inside the panel: cards wiggle, a minus hides a card,
+ * iOS-style editing inside the panel: a minus hides a card,
  * dragging a card (or Up/Down on a focused card) reorders, and an "Add
  * widgets" tray at the end brings hidden ones back. Every change is written
  * to the `widgets` setting; the panel applies it like any other change.
  *
  * The panel forwards its captured events to handleEvent() while editing, so
  * a press on a card starts a drag instead of reaching the card's controls.
+ *
+ * Cards do not wiggle as on iOS: Clutter rotates a card's text with it, and
+ * at panel font sizes even a 0.7° tilt renders it slanted, as if italic.
  */
 export class EditMode {
     constructor(settings, content, onChange) {
@@ -44,7 +46,6 @@ export class EditMode {
             card.remove_style_pseudo_class('editing');
             card.can_focus = false;
             card.reactive = false;
-            this._still(card);
             card._ledgeHide?.destroy();
             card._ledgeHide = null;
         }
@@ -169,29 +170,6 @@ export class EditMode {
             card.get_first_child().add_child(hide);
             card._ledgeHide = hide;
         }
-        if (!this._drag || this._drag.card !== card)
-            this._wiggle(card);
-    }
-
-    _wiggle(card) {
-        if (!St.Settings.get().enable_animations || card._ledgeWiggling)
-            return;
-        card._ledgeWiggling = true;
-        card.set_pivot_point(0.5, 0.5);
-        card.rotation_angle_z = -WIGGLE_DEGREES;
-        card.ease({
-            rotation_angle_z: WIGGLE_DEGREES,
-            duration: 130 + Math.round(Math.random() * 40),
-            mode: Clutter.AnimationMode.EASE_IN_OUT_SINE,
-            repeatCount: -1,
-            autoReverse: true,
-        });
-    }
-
-    _still(card) {
-        card._ledgeWiggling = false;
-        card.remove_transition('rotation-angle-z');
-        card.rotation_angle_z = 0;
     }
 
     _rebuildTray() {
@@ -253,7 +231,6 @@ export class EditMode {
             if (Math.abs(y - drag.startY) < DRAG_THRESHOLD)
                 return;
             drag.moved = true;
-            this._still(drag.card);
             drag.card.add_style_pseudo_class('dragging');
         }
         const cards = this._cards().filter(c => c.visible);
@@ -289,10 +266,6 @@ export class EditMode {
             translation_y: 0,
             duration: 220,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            onComplete: () => {
-                if (this.active)
-                    this._wiggle(drag.card);
-            },
         });
         if (save)
             this._save();

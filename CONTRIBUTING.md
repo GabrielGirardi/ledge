@@ -74,7 +74,7 @@ grep ledge-state "$XDG_RUNTIME_DIR/ledge-nested/shell.log"
 `nested.sh` also sets `LEDGE_DEV=1`, so the same hooks work there. The hooks
 never load in a normal session.
 
-Both shells use a private data folder (`$XDG_RUNTIME_DIR/ledge-nested/data`).
+Both shells use private data and config folders under `$XDG_RUNTIME_DIR/ledge-nested`.
 An installed copy of Ledge stays untouched, and the to-do list and screen
 time you see in them are separate from your real ones.
 

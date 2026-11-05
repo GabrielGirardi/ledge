@@ -3,6 +3,7 @@
 Each test that guards a past bug names it, so a failure says what came back.
 """
 
+import time
 import unittest
 
 from harness import ESCAPE, Shell
@@ -166,6 +167,17 @@ class WidgetsTest(unittest.TestCase):
         shell.click_target(f"card:{first}")  # a press without moving focuses the card
         shell.key(DOWN)
         shell.wait_for(lambda: visible()[:2] == [second, first], f"{first} moved below {second}")
+
+    def test_edit_mode_keeps_cards_in_place(self):
+        # 0.4 dev: the minus button, taller than a card's title, grew every
+        # card and shifted its content; and the wiggle tilted the cards, which
+        # rendered their text slanted, as if italic.
+        cards = lambda st: {k: v for k, v in st["targets"].items() if k.startswith("card:")}
+        before = cards(shell.open_panel())
+        shell.click_target("edit")
+        shell.wait_for(lambda: shell.state()["editing"], "edit mode")
+        time.sleep(0.5)  # well into any animation
+        self.assertEqual(cards(shell.state()), before)
 
     def test_cards_are_inert_while_editing(self):
         self.edit()

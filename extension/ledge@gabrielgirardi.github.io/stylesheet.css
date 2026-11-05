@@ -32,7 +32,9 @@
   spacing: 6px;
 }
 
-.ledge-card-head { spacing: 6px; }
+/* As tall as the edit-mode minus button, so entering edit mode never moves
+   a card's content. */
+.ledge-card-head { spacing: 6px; min-height: 20px; }
 .ledge-card-icon { icon-size: 14px; color: rgba(255, 255, 255, 0.7); }
 .ledge-card-title { color: rgba(255, 255, 255, 0.6); font-size: 11px; font-weight: 700; }
 .ledge-card-value { color: #ffffff; font-size: 30px; font-weight: 300; }

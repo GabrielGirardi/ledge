@@ -14,8 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   while a mouse button is held, and it can be turned off (#3).
 - Choose, order, and hide widgets in the preferences. A hidden widget is not
   loaded at all (#5).
-- Edit mode: the pencil in the panel makes the cards wiggle. Drag to reorder,
-  <kbd>↑</kbd>/<kbd>↓</kbd> on a focused card, <kbd>−</kbd> to hide, and an
+- Edit mode, from the pencil in the panel. Drag a card to reorder, or press
+  <kbd>↑</kbd>/<kbd>↓</kbd> on a focused card; <kbd>−</kbd> to hide, and an
   "Add widgets" tray to bring hidden ones back. <kbd>Esc</kbd> leaves edit
   mode before it closes the panel (#6).
 - UI regression tests (`tests/ui`) that drive a headless GNOME Shell, run in

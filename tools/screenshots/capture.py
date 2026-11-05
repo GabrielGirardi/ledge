@@ -151,12 +151,9 @@ try:
     emit("Toggle")
     time.sleep(2)
     hero = shot("hero")
-    # A still frame of edit mode: mid-wiggle captures show ghosted cards.
-    gset("org.gnome.desktop.interface", "enable-animations", "false")
     click("edit")
     time.sleep(0.8)
     editing = shot("edit")
-    gset("org.gnome.desktop.interface", "enable-animations", "true")
     emit("Key", "(u)", 65307)  # leave edit mode
     time.sleep(0.6)
     show(1, 0.5)

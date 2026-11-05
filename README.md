@@ -90,13 +90,13 @@ time are not counted.
 
 ### Make it yours
 
-Click the pencil in the panel's corner. The cards start to wiggle. Drag a card
+Click the pencil in the panel's corner. Each card gets a red minus button. Drag a card
 to move it, tap <kbd>−</kbd> to hide it, and bring it back from **Add widgets**.
 On the keyboard, focus a card and press <kbd>↑</kbd> or <kbd>↓</kbd>. A hidden
 widget is not loaded at all, so it costs nothing.
 
 <div align="center">
-<img src="docs/images/edit-mode.png" alt="Edit mode: cards wiggle, each with a red minus button, and a Done button in the corner" width="300">
+<img src="docs/images/edit-mode.png" alt="Edit mode: cards, each with a red minus button, and a Done button in the corner" width="300">
 </div>
 
 <table>

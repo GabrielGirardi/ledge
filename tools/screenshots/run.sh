@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Regenerates docs/images/ from fictional data in an isolated GNOME profile:
 # generated wallpaper and album art, a local calendar, a demo MPRIS player.
-# Opens a nested GNOME Shell window for about a minute. Batteries and weather
-# are live, since they come from UPower and Open-Meteo.
+# Runs a headless GNOME Shell for about a minute; nothing appears on screen.
+# Batteries and weather are live, since they come from UPower and Open-Meteo.
 set -euo pipefail
 here="$(cd "$(dirname "$0")/../.." && pwd)"
 tools="$here/tools/screenshots"

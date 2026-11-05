@@ -45,8 +45,9 @@ Swipe in from the touchpad edge and the panel follows your fingers. Let go
 past halfway, or flick quickly, and a spring finishes the motion. Swipe back,
 press <kbd>Esc</kbd>, or click anywhere outside the panel to close it.
 
-You can also press <kbd>Super</kbd>+<kbd>T</kbd> or click the Ledge button next to your
-system icons. The panel opens on the screen you are using.
+No touchpad, or no visible bar? Push the pointer against the screen edge, press
+<kbd>Super</kbd>+<kbd>T</kbd>, or click the Ledge button next to your system icons. The
+panel opens on the screen you are using.
 
 ## What's inside
 
@@ -86,6 +87,17 @@ time are not counted.
 </td>
 </tr>
 </table>
+
+### Make it yours
+
+Click the pencil in the panel's corner. The cards start to wiggle. Drag a card
+to move it, tap <kbd>−</kbd> to hide it, and bring it back from **Add widgets**.
+On the keyboard, focus a card and press <kbd>↑</kbd> or <kbd>↓</kbd>. A hidden
+widget is not loaded at all, so it costs nothing.
+
+<div align="center">
+<img src="docs/images/edit-mode.png" alt="Edit mode: cards wiggle, each with a red minus button, and a Done button in the corner" width="300">
+</div>
 
 <table>
 <tr>
@@ -139,7 +151,9 @@ ledge@gabrielgirardi.github.io`, or open the Extensions app.
 | Setting | Default | Notes |
 |---|---|---|
 | Screen side | Right | Only a swipe from this touchpad edge opens the panel. |
+| Hot edge | On | Push the pointer against the screen edge to open the panel. Never fires in fullscreen apps or while dragging. |
 | Panel button | On | Sits next to your system icons, wherever your bar is. |
+| Widgets | All six | Choose and order them here, or with the pencil in the panel. |
 | Keyboard shortcut | `<Super>t` | Any GTK accelerator, for example `<Super><Shift>d`. |
 | Weather city | Empty | When empty, Ledge uses the city of your time zone. For example, `America/Sao_Paulo` gives São Paulo. |
 
@@ -196,7 +210,8 @@ state machine, and how the glass is rendered.
 - [x] Keyboard shortcut, panel button, settings button, left or right edge
 - [x] English and Brazilian Portuguese
 - [x] Opens on the active monitor
-- [ ] **0.4:** a hot edge (push the pointer against the screen edge), and choosing, reordering, and editing widgets
+- [x] Hot edge, edit mode, and choosing and ordering widgets
+- [x] UI regression tests on GNOME Shell, in CI
 - [ ] **0.5:** GNOME Shell 47, 48, and 49
 - [ ] **0.6:** more widgets: phone battery (GSConnect), system stats, world clocks, reminders
 - [ ] **0.7:** extensions.gnome.org, AUR, Fedora COPR, `.deb`, and a Rust helper

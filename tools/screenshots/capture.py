@@ -1,4 +1,4 @@
-"""Drives nested GNOME Shell sessions and writes the README images.
+"""Drives headless GNOME Shell sessions and writes the README images.
 Run through tools/screenshots/run.sh, which sets up the isolated profile."""
 
 import math
@@ -36,6 +36,20 @@ def emit(name, fmt=None, *args):
     bus.flush_sync(None)
 
 
+def targets():
+    reply = bus.call_sync("org.gnome.Shell", "/io/github/gabrielgirardi/Ledge/Dev",
+                          "io.github.gabrielgirardi.Ledge.DevQuery1", "GetState", None,
+                          GLib.VariantType("(s)"), Gio.DBusCallFlags.NONE, 5000, None)
+    import json
+    return json.loads(reply.unpack()[0])["targets"]
+
+
+def click(name):
+    x, y, _w, _h = targets()[name]
+    emit("Click", "(ii)", x, y)
+    time.sleep(0.8)
+
+
 def shot(name):
     path = raw / f"{name}.png"
     path.unlink(missing_ok=True)
@@ -61,16 +75,23 @@ def wayland_sockets():
 
 def start_shell(lang):
     before = wayland_sockets()
+    # A private PipeWire directory keeps the developer's real audio devices
+    # (and a live microphone indicator) out of the images.
+    pipewire = work / "pipewire"
+    pipewire.mkdir(exist_ok=True)
     env = dict(os.environ, LANGUAGE=lang, LC_ALL=f"{lang}.UTF-8", LEDGE_DEV="1",
+               PIPEWIRE_RUNTIME_DIR=str(pipewire), PULSE_RUNTIME_PATH=str(pipewire),
                MUTTER_DEBUG_DUMMY_MODE_SPECS=f"{W}x{H}")
-    shell = subprocess.Popen(["gnome-shell", "--nested", "--wayland"], env=env,
+    # Headless, not nested: the pointer is ours to move, and no window
+    # appears on the developer's screen.
+    shell = subprocess.Popen(["gnome-shell", "--headless", "--wayland", "--virtual-monitor", f"{W}x{H}"], env=env,
                              stdout=subprocess.DEVNULL, stderr=open(work / f"shell-{lang}.log", "w"))
     for _ in range(120):
         time.sleep(0.5)
         info = subprocess.run(["gnome-extensions", "info", UUID], capture_output=True, text=True).stdout
         if "State: ACTIVE" in info:
             # D-Bus-activated apps (the preferences window) must open on the
-            # nested display, not on the session the script was started from.
+            # headless display, not on the session the script was started from.
             socket = sorted(wayland_sockets() - before)[-1]
             subprocess.run(["dbus-update-activation-environment", f"WAYLAND_DISPLAY={socket}", "DISPLAY="],
                            check=True)
@@ -127,8 +148,18 @@ try:
     # English, right edge: hero, gesture animation, preferences.
     gset("org.gnome.shell.extensions.ledge", "side", "'right'", ledge=True)
     shell = start_shell("en_US")
-    show(1, 1.5)
+    emit("Toggle")
+    time.sleep(2)
     hero = shot("hero")
+    # A still frame of edit mode: mid-wiggle captures show ghosted cards.
+    gset("org.gnome.desktop.interface", "enable-animations", "false")
+    click("edit")
+    time.sleep(0.8)
+    editing = shot("edit")
+    gset("org.gnome.desktop.interface", "enable-animations", "true")
+    emit("Key", "(u)", 65307)  # leave edit mode
+    time.sleep(0.6)
+    show(1, 0.5)
     frames, durations = [], []
     for p, ms in gesture_curve():
         show(p, 0.03)
@@ -153,6 +184,7 @@ finally:
 
 hero.save(images / "hero.jpg", quality=90, optimize=True, progressive=True)
 hero.crop((W - 470, 0, W, H)).save(images / "panel.png", optimize=True)
+editing.crop((W - 470, 0, W, H)).save(images / "edit-mode.png", optimize=True)
 left.crop((0, 0, 470, H)).save(images / "left-pt-br.png", optimize=True)
 
 box = ImageChops.difference(prefs_full, desktop).getbbox()

@@ -64,6 +64,8 @@ grep ledge-state "$XDG_RUNTIME_DIR/ledge-nested/shell.log"
 | `Show P` | Pins the panel at a position from 0 (closed) to 1 (open) |
 | `Click X Y`, `Scroll X Y STEPS` | Real pointer events, through the same path as a mouse |
 | `Warp X Y` | Moves the pointer, which decides the active monitor |
+| `Push DX STEPS` | Relative pointer motion, for the hot edge |
+| `Drag X Y DY STEPS` | Press, move, release, for edit mode |
 | `Pick X Y` | Logs the actor under a point and its parents. Use it when a click does not land where you expect. |
 | `Key KEYVAL`, `Type TEXT` | Real key events. `65307` is Escape; `\n` in the text presses Return. |
 | `Shot PATH` | Saves a PNG of the whole stage |

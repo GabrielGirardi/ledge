@@ -125,6 +125,42 @@ painting, to that page. The result: the right ~38 px of every row was drawn
 but ignored clicks. Use the `Pick` development hook to check hit-testing after
 any layout change.
 
+A related trap: when the panel's content is taller than the screen, GNOME 46
+lays it out at *minimum* heights, and a nested scroll view's minimum is next to
+nothing. The to-do list pins its `min_height` to its rows (up to its cap), so
+the panel scrolls instead of squeezing the list.
+
+### Hot edge
+
+`Layout.PressureBarrier` with one `Meta.Barrier` per monitor on the configured
+edge, only where that edge is the edge of the whole screen. A barrier on an
+edge shared with another monitor would stop the pointer from crossing. The
+barriers stop 48 px short of the corners. An event filter ignores pushes while
+a mouse button is held (drag and drop) or on a monitor running something
+fullscreen. The barriers are rebuilt when the monitors, the side, or the
+setting change.
+
+### Widgets and edit mode
+
+The `widgets` setting is the source of truth: shown widget ids, in order.
+`widgets/catalog.js` lists the known widgets for both the panel and the
+preferences. It imports nothing from GNOME Shell, because the preferences run
+in a separate GTK process. `_syncWidgets()` diffs the setting against the live
+widgets. It destroys removed ones (a hidden widget makes no D-Bus or network
+calls), creates added ones, and reorders the rest without rebuilding them.
+
+Edit mode (`editMode.js`) only ever writes that setting. While it is active,
+the panel forwards its captured events to it first:
+
+- A press on a card starts a drag instead of reaching the card's controls.
+  Cards are made reactive so the press does not pick the scroll view behind
+  them.
+- Motion moves the card under the pointer and reorders it live.
+- Release writes the new order.
+
+There is no `Clutter.DragAction` in GNOME 46, so dragging is built on the
+panel's existing modal grab.
+
 ### Height
 
 The panel sizes to its content, up to the room between GNOME's panel and the

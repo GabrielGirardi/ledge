@@ -125,6 +125,28 @@
 }
 .ledge-link-button:hover, .ledge-link-button:focus { background-color: rgba(100, 168, 255, 0.14); }
 
+.ledge-segments {
+  padding: 2px;
+  margin-bottom: 8px;
+  border-radius: 9px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.ledge-segment {
+  padding: 4px 0;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+}
+.ledge-segment:hover { color: #ffffff; }
+.ledge-segment:focus { box-shadow: inset 0 0 0 1px #64a8ff; }
+.ledge-segment:checked { color: #ffffff; background-color: rgba(255, 255, 255, 0.18); }
+
+.ledge-usage-chart { spacing: 4px; padding-top: 10px; }
+.ledge-usage-day { spacing: 4px; }
+.ledge-usage-bar { border-radius: 3px; background-color: rgba(10, 132, 255, 0.55); }
+.ledge-usage-bar-today { background-color: #0a84ff; }
+.ledge-usage-day-label { color: rgba(255, 255, 255, 0.5); font-size: 10px; font-weight: 600; }
 .ledge-usage-list { spacing: 8px; padding-top: 8px; }
 .ledge-usage-row { spacing: 10px; }
 .ledge-usage-name { color: #ffffff; font-size: 13px; }

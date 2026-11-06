@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Screen Time: switch between today, the last 7 days, and the last 30 days.
+  The longer ranges show the total, a daily average, one bar per day, and the
+  most used apps over the range.
+
 ## [0.4.0] - 2026-11-05
 
 ### Added

@@ -205,7 +205,7 @@ Each widget is a module in `widgets/` that exposes:
 | Batteries | UPower over the system bus | Live, through `PropertiesChanged` and `DeviceAdded`/`DeviceRemoved` |
 | Calendar | GNOME Shell's `DBusEventSource` (the calendar server) | On open, plus change signals |
 | To-do | `~/.local/share/ledge/todo.json` through `JsonStore` | Written on every change |
-| Screen Time | `UsageTracker` (`usage.js`): `Shell.WindowTracker` focus changes, minus idle (2 min) and locked time | Always running. Saved every 60 s to `~/.local/share/ledge/usage.json`, which keeps 30 days |
+| Screen Time | `UsageTracker` (`usage.js`): `Shell.WindowTracker` focus changes, minus idle (2 min) and locked time | Always running. Saved every 60 s to `~/.local/share/ledge/usage.json`, which keeps 30 days, the longest range the card shows |
 | Now Playing | GNOME Shell's `MprisPlayer`, one per `org.mpris.MediaPlayer2.*` name | Live |
 
 ## Locale

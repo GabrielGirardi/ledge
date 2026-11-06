@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 19:05-0300\n"
+"POT-Creation-Date: 2026-11-06 19:58-0300\n"
 "PO-Revision-Date: 2026-11-03 20:07-0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -44,6 +44,7 @@ msgid "Done"
 msgstr "Concluído"
 
 #: extension/ledge@gabrielgirardi.github.io/extension.js:332
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:18
 msgid "Today"
 msgstr "Hoje"
 
@@ -90,8 +91,8 @@ msgstr "Atalho de teclado (por exemplo <Super>t)"
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:77
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:7
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:55
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:196
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:53
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:202
 msgid "Weather"
 msgstr "Clima"
 
@@ -193,7 +194,7 @@ msgid "To-do"
 msgstr "Tarefas"
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:11
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:26
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:39
 msgid "Screen Time"
 msgstr "Tempo de uso"
 
@@ -202,29 +203,46 @@ msgstr "Tempo de uso"
 msgid "Now Playing"
 msgstr "Tocando agora"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:17
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:19
+msgid "7 days"
+msgstr "7 dias"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:20
+msgid "30 days"
+msgstr "30 dias"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:26
 msgid "<1m"
 msgstr "<1min"
 
 #. Translators: hours and minutes, e.g. "3h 05m"
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:21
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:30
 #, javascript-format
 msgid "%dh %02dm"
 msgstr "%dh %02dmin"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:21
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:30
 #, javascript-format
 msgid "%dm"
 msgstr "%dmin"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:28
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:46
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:100
 msgid "Today, in apps"
 msgstr "Hoje, nos apps"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:46
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:100
 msgid "Nothing tracked yet today"
 msgstr "Nada registrado hoje ainda"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:102
+msgid "Nothing tracked in this period"
+msgstr "Nada registrado neste período"
+
+#. Translators: average time in apps per day, e.g. "Average 3h 05m a day"
+#: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:105
+#, javascript-format
+msgid "Average %s a day"
+msgstr "Média de %s por dia"
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:49
 msgid "Delete task"
@@ -256,61 +274,61 @@ msgstr "Tudo feito"
 msgid "%d of %d done"
 msgstr "%d de %d feitas"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:25
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:23
 msgid "Clear sky"
 msgstr "Céu limpo"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:26
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:24
 msgid "Partly cloudy"
 msgstr "Parcialmente nublado"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:27
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:25
 msgid "Overcast"
 msgstr "Nublado"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:28
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:26
 msgid "Fog"
 msgstr "Neblina"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:29
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:27
 msgid "Drizzle"
 msgstr "Garoa"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:30
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:28
 msgid "Rain"
 msgstr "Chuva"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:31
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:29
 msgid "Snow"
 msgstr "Neve"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:32
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:30
 msgid "Thunderstorm"
 msgstr "Tempestade"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:39
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:37
 msgid "Unavailable"
 msgstr "Indisponível"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:80
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:79
 msgid "Loading…"
 msgstr "Carregando…"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:94
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:93
 msgid "Could not load the weather"
 msgstr "Não foi possível carregar o clima"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:175
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:181
 msgid "Your location"
 msgstr "Sua localização"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:187
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:193
 #, javascript-format
 msgid "City “%s” not found"
 msgstr "Cidade “%s” não encontrada"
 
 #. Translators: condition · daily high and low, e.g. "Rain · high 28° low 17°"
-#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:208
+#: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:214
 #, javascript-format
 msgid "%s · high %s° low %s°"
 msgstr "%s · máx %s° mín %s°"

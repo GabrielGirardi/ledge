@@ -6,7 +6,7 @@ Each test that guards a past bug names it, so a failure says what came back.
 import time
 import unittest
 
-from harness import ESCAPE, Shell
+from harness import DATA as DATA_DIR, ESCAPE, Shell
 
 DOWN = 65364
 DEFAULT_WIDGETS = "['weather', 'batteries', 'calendar', 'todo', 'screen-time', 'media']"
@@ -269,3 +269,36 @@ class WeatherTest(unittest.TestCase):
         shell.wait_for(lambda: self.title() == "WEATHER · RECIFE", "Recife in the title")
         time.sleep(3)  # long enough for a stale update to land
         self.assertEqual(self.title(), "WEATHER · RECIFE")
+
+
+class ScreenTimeTest(unittest.TestCase):
+    def test_ranges_sum_the_saved_history(self):
+        # 0.4: only today was shown, though 30 days were kept.
+        import datetime
+        import json
+
+        shell.close_panel()
+        shell.set_setting("widgets", "['weather']")
+        shell.wait_for(lambda: shell.state()["cards"] == ["weather"], "screen time removed")
+        day = lambda back: (datetime.date.today() - datetime.timedelta(days=back)).isoformat()
+        hour = 3600
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        (DATA_DIR / "usage.json").write_text(json.dumps({"days": {
+            day(0): {"a.desktop": 1 * hour},
+            day(3): {"a.desktop": 1 * hour, "b.desktop": 1 * hour},
+            day(10): {"b.desktop": 4 * hour},
+            day(40): {"a.desktop": 8 * hour},  # past the 30 days
+        }}))
+        shell.set_setting("widgets", "['screen-time']")
+        shell.open_panel()
+        total = lambda: shell.state()["texts"].get("usage-total")
+        try:
+            shell.wait_for(lambda: total() == "1h 00m", "today's total")
+            shell.click_target("usage-range:7")
+            shell.wait_for(lambda: total() == "3h 00m", "7-day total")
+            self.assertEqual(shell.state()["texts"]["usage-caption"], "Average 25m a day")
+            shell.click_target("usage-range:30")
+            shell.wait_for(lambda: total() == "7h 00m", "30-day total")
+        finally:
+            shell.close_panel()
+            shell.set_setting("widgets", DEFAULT_WIDGETS)

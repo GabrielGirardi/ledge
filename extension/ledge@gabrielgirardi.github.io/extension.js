@@ -725,7 +725,10 @@ class Ledge {
 
     _devState() {
         const targets = {};
+        const texts = {};
         const walk = actor => {
+            if (actor.name?.startsWith('ledge:') && actor instanceof St.Label)
+                texts[actor.name.slice(6)] = actor.text;
             if (actor.name?.startsWith('ledge:') && actor.mapped) {
                 const e = actor.get_transformed_extents();
                 targets[actor.name.slice(6)] = [Math.round(e.get_x() + e.get_width() / 2),
@@ -751,6 +754,7 @@ class Ledge {
             pointer: global.get_pointer().slice(0, 2),
             overview: Main.overview.visible,
             targets,
+            texts,
         };
     }
 

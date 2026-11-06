@@ -12,6 +12,12 @@ const KEEP_DAYS = 30;
 const dayKey = (date = new Date()) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
+/** Local midnight `back` days before today; calendar days, so DST is not an issue. */
+const daysAgo = back => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate() - back);
+};
+
 /**
  * Counts how long each app holds keyboard focus, per local day. Time does not
  * count while the user is idle for two minutes or the screen is locked.
@@ -25,7 +31,8 @@ export class UsageTracker {
         this._idle = false;
         this._loaded = false;
         this._store = new JsonStore('usage.json');
-        this._store.load({days: {}}).then(data => {
+        /** Resolves once the saved history is in, so views can redraw with it. */
+        this.loaded = this._store.load({days: {}}).then(data => {
             if (!this._store)
                 return;
             for (const [day, apps] of Object.entries(data.days ?? {})) {
@@ -59,12 +66,29 @@ export class UsageTracker {
         this._restart();
     }
 
-    /** Today's apps, most used first: [{appId, seconds}]. */
-    today() {
+    /**
+     * The last `days` days, today included.
+     *
+     * @returns {{apps: {appId: string, seconds: number}[], daily: {date: Date, seconds: number}[]}}
+     *   apps most used first, summed over the range; daily oldest first.
+     */
+    range(days) {
         this._flush();
-        return Object.entries(this._days[dayKey()] ?? {})
+        const totals = {};
+        const daily = [];
+        for (let back = days - 1; back >= 0; back--) {
+            const date = daysAgo(back);
+            let seconds = 0;
+            for (const [appId, s] of Object.entries(this._days[dayKey(date)] ?? {})) {
+                totals[appId] = (totals[appId] ?? 0) + s;
+                seconds += s;
+            }
+            daily.push({date, seconds});
+        }
+        const apps = Object.entries(totals)
             .map(([appId, seconds]) => ({appId, seconds}))
             .sort((a, b) => b.seconds - a.seconds);
+        return {apps, daily};
     }
 
     _countable() {
@@ -97,7 +121,7 @@ export class UsageTracker {
         // Saving before the history is loaded would overwrite it.
         if (!this._dirty || !this._loaded)
             return;
-        const cutoff = dayKey(new Date(Date.now() - KEEP_DAYS * 24 * 60 * 60 * 1000));
+        const cutoff = dayKey(daysAgo(KEEP_DAYS - 1));
         for (const day of Object.keys(this._days)) {
             if (day < cutoff)
                 delete this._days[day];

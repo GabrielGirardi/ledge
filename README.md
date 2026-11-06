@@ -83,8 +83,9 @@ A quick list for today. Type a task and press <kbd>Enter</kbd>. Check it off
 or delete it. The list stays on your machine.
 
 **⏱️ Screen Time**<br>
-How long you have used each app today, with your top four. Idle and locked
-time are not counted.
+How long you have used your apps today, in the last 7 days, or in the last
+30, with your top four. Longer ranges show a daily average and one bar per
+day. Idle and locked time are not counted.
 
 </td>
 </tr>

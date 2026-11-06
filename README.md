@@ -146,6 +146,18 @@ The script installs three things:
 To remove Ledge, run `./scripts/uninstall.sh`. Add `--udev` to also remove the
 udev rule.
 
+### Updating
+
+From 0.4.1 on, Ledge updates itself: open the settings and click **Check for
+updates**, or turn on **Automatic updates**. It installs the new extension
+and touchpad helper from this project's GitHub releases, after checking that
+your GNOME Shell version is supported. The new version starts at your next
+login. With automatic updates off, Ledge tells you once when a new version
+is out.
+
+A copy installed by your distribution, or run from a git checkout, does not
+update itself; update it the same way you installed it.
+
 ## Configure
 
 Click the gear in the panel's top corner, run `gnome-extensions prefs
@@ -158,6 +170,7 @@ ledge@gabrielgirardi.github.io`, or open the Extensions app.
 | Panel button | On | Sits next to your system icons, wherever your bar is. |
 | Widgets | All six | Choose and order them here, or with the pencil in the panel. |
 | Keyboard shortcut | `<Super>t` | Any GTK accelerator, for example `<Super><Shift>d`. |
+| Automatic updates | Off | Installs new versions in the background. See [Updating](#updating). |
 | Weather location | Automatic | Search for a city by name; results show the state and country. Automatic uses where your device is when Location Services are on (Settings › Privacy), otherwise the city of your time zone. |
 
 Text follows your interface language. Dates and times follow your regional
@@ -199,6 +212,9 @@ state machine, and how the glass is rendered.
 - **Local data.** Your to-do list and screen time are stored only in
   `~/.local/share/ledge/`, and only you can read them. Screen time keeps 30
   days of history. Delete the folder to erase it.
+- **Update checks.** Once a day, Ledge asks GitHub's API for this project's
+  releases, the same public request a browser makes. Copies installed by your
+  distribution never do.
 - **No telemetry.** Ledge has no analytics and no accounts.
 
 ## Troubleshooting

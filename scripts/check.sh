@@ -47,5 +47,10 @@ for po in "$here"/po/*.po; do
   [ "$untranslated" -eq 0 ] || echo "note: $(basename "$po") has $untranslated untranslated strings"
 done
 
+step "Unit tests"
+for f in "$here"/tests/unit/*.test.js; do
+  gjs -m "$f" >/dev/null || { gjs -m "$f" | grep FAIL; fail "$f"; }
+done
+
 if [ "$failed" -ne 0 ]; then echo; echo "checks failed"; exit 1; fi
 echo; echo "all checks passed"

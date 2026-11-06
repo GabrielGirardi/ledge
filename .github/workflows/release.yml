@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 22
       - name: Install tools
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gettext libglib2.0-bin zip
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gettext libglib2.0-bin zip gjs gir1.2-soup-3.0
       - name: Tag matches metadata.json
         run: |
           tag="${GITHUB_REF_NAME#v}"
@@ -41,4 +41,5 @@ jobs:
           version="${GITHUB_REF_NAME#v}"
           flags=()
           case "$version" in 0.*|*-*) flags+=(--prerelease) ;; esac
-          gh release create "$GITHUB_REF_NAME" dist/*.zip --title "Ledge $version" --notes-file notes.md "${flags[@]}"
+          # metadata.json lets the in-app updater check GNOME compatibility before downloading.
+          gh release create "$GITHUB_REF_NAME" dist/*.zip extension/ledge@gabrielgirardi.github.io/metadata.json --title "Ledge $version" --notes-file notes.md "${flags[@]}"

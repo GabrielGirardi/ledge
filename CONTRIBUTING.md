@@ -20,8 +20,9 @@ Issues labeled `good first issue` are a good place to start.
 
 ## Development setup
 
-You need GNOME Shell 46, Node.js (only to run syntax checks), Python 3 with
-PyGObject, and the `gettext`, `glib-compile-schemas`, and `zip` tools.
+You need GNOME Shell 46 (which brings `gjs`, for the unit tests), Node.js
+(only to run syntax checks), Python 3 with PyGObject, and the `gettext`,
+`glib-compile-schemas`, and `zip` tools.
 
 ```sh
 git clone https://github.com/GabrielGirardi/ledge.git

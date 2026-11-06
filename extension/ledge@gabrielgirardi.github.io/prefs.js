@@ -4,12 +4,18 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import * as Config from 'resource:///org/gnome/Shell/Extensions/js/misc/config.js';
 
 import {newSession, searchPlaces} from './geocode.js';
 import {messagesLanguage} from './locale.js';
+import {canSelfUpdate, findUpdate, installUpdate, installedVersion, isNewer} from './updater.js';
 import {CATALOG, shownWidgets} from './widgets/catalog.js';
 
 const SEARCH_DELAY_MS = 350;
+
+// String.prototype.format is a GNOME Shell addition; the preferences process
+// cannot count on it.
+const fmt = (text, ...values) => values.reduce((out, value) => out.replace(/%[sd]/, value), text);
 
 const SIDES = ['right', 'left'];
 
@@ -64,6 +70,7 @@ export default class LedgePreferences extends ExtensionPreferences {
         page.add(this._widgetsGroup(settings));
 
         page.add(this._weatherGroup(settings));
+        page.add(this._updatesGroup(settings));
 
         window.add(page);
     }
@@ -185,6 +192,92 @@ export default class LedgePreferences extends ExtensionPreferences {
             cancellable?.cancel();
             ids.forEach(id => settings.disconnect(id));
             location.disconnect(locationId);
+        });
+        return group;
+    }
+
+    /**
+     * The running version, a button that checks for and installs a new one,
+     * and the automatic updates switch. The running version comes from GNOME
+     * Shell; the one on disk can be newer, waiting for the next login.
+     */
+    _updatesGroup(settings) {
+        const group = new Adw.PreferencesGroup({title: _('Updates')});
+        const running = this.metadata['version-name'];
+        const allowed = canSelfUpdate(this.path);
+
+        const version = new Adw.ActionRow({title: fmt(_('Version %s'), running)});
+        version.add_prefix(new Gtk.Image({icon_name: 'software-update-available-symbolic'}));
+        const spinner = new Gtk.Spinner({valign: Gtk.Align.CENTER, visible: false});
+        const button = new Gtk.Button({label: _('Check for updates'), valign: Gtk.Align.CENTER});
+        version.add_suffix(spinner);
+        version.add_suffix(button);
+        group.add(version);
+
+        const auto = new Adw.SwitchRow({
+            title: _('Automatic updates'),
+            subtitle: _('Install new versions in the background, checking once a day'),
+        });
+        settings.bind('auto-update', auto, 'active', 0);
+        group.add(auto);
+
+        if (!allowed) {
+            version.subtitle = _('Installed by your system or from source code. Update it the same way.');
+            button.sensitive = false;
+            auto.sensitive = false;
+            return group;
+        }
+
+        const session = newSession();
+        const cancellable = new Gio.Cancellable();
+        group.connect('destroy', () => cancellable.cancel());
+        let found = null;
+        const busy = (on, label) => {
+            spinner.visible = spinner.spinning = on;
+            button.sensitive = !on;
+            if (label)
+                button.label = label;
+        };
+        const pending = installed => {
+            version.subtitle = fmt(_('Version %s is installed. Log out and back in to start using it.'), installed);
+            button.visible = false;
+        };
+
+        installedVersion(this.path).then(installed => {
+            if (isNewer(installed, running))
+                pending(installed);
+        }).catch(() => {});
+
+        button.connect('clicked', async () => {
+            try {
+                if (!found) {
+                    busy(true);
+                    const installed = await installedVersion(this.path);
+                    found = await findUpdate(session, installed, Config.PACKAGE_VERSION, {cancellable});
+                    settings.set_int64('update-checked-at', Math.floor(Date.now() / 1000));
+                    busy(false);
+                    if (found) {
+                        version.subtitle = fmt(_('Version %s is available'), found.version);
+                        button.label = _('Update');
+                        button.add_css_class('suggested-action');
+                    } else {
+                        version.subtitle = _('Ledge is up to date');
+                    }
+                    return;
+                }
+                busy(true, _('Updating…'));
+                await installUpdate(session, found, this.path, {cancellable});
+                busy(false);
+                button.remove_css_class('suggested-action');
+                pending(found.version);
+            } catch (e) {
+                if (cancellable.is_cancelled())
+                    return;
+                busy(false, found ? _('Update') : _('Check for updates'));
+                version.subtitle = found
+                    ? fmt(_('Could not update: %s'), e.message)
+                    : _('Could not check for updates. Check your internet connection.');
+            }
         });
         return group;
     }

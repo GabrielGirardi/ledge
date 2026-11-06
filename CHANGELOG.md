@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Updates from the settings: **Check for updates** installs a new version
+  from GitHub, together with the touchpad helper, once it supports your GNOME
+  Shell version. **Automatic updates** (off by default) does it once a day in
+  the background. Either way, the new version starts at the next login.
+
 - Screen Time: switch between today, the last 7 days, and the last 30 days.
   The longer ranges show the total, a daily average, one bar per day, and the
   most used apps over the range.

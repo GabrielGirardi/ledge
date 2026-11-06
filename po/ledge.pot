@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 19:58-0300\n"
+"POT-Creation-Date: 2026-11-06 20:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,120 +31,196 @@ msgstr ""
 msgid "Add %s"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:124
+#: extension/ledge@gabrielgirardi.github.io/extension.js:125
 msgid "Settings"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:136
+#: extension/ledge@gabrielgirardi.github.io/extension.js:137
 msgid "Edit widgets"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:143
+#: extension/ledge@gabrielgirardi.github.io/extension.js:144
 msgid "Done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:332
+#: extension/ledge@gabrielgirardi.github.io/extension.js:333
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:18
 msgid "Today"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:21
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:23
 msgid "Panel"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:23
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:25
 msgid "Screen side"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:24
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:26
 msgid "The panel opens with a two-finger swipe from this touchpad edge"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:25
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:27
 msgid "Right"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:25
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:27
 msgid "Left"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:32
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:34
 msgid "Hot edge"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:33
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:35
 msgid "Push the pointer against the screen edge to open the panel"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:39
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:41
 msgid "Panel button"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:40
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:42
 msgid "A button next to your system icons, wherever your bar is"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:46
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:48
 msgid "Keyboard shortcut (for example <Super>t)"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:77
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:80
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:7
 #: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:53
 #: extension/ledge@gabrielgirardi.github.io/widgets/weather.js:202
 msgid "Weather"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:77
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:80
 msgid "Data from Open-Meteo"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:80
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:83
 msgid "Location"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:83
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:86
 msgid "Use automatic"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:101
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:104
 msgid "Automatic: where this device is"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:103
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:106
 msgid ""
 "Automatic: the city of your time zone. Turn on Location Services in Settings "
 "› Privacy to use where this device is."
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:112
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:115
 msgid "Search for a city"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:148
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:151
 msgid "Could not search. Check your internet connection."
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:154
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:157
 msgid "No places found"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:195
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:201
+msgid "Updates"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:205
+#, javascript-format
+msgid "Version %s"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:208
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:272
+msgid "Check for updates"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:214
+msgid "Automatic updates"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:215
+msgid "Install new versions in the background, checking once a day"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:221
+msgid "Installed by your system or from source code. Update it the same way."
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:238
+#, javascript-format
+msgid "Version %s is installed. Log out and back in to start using it."
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:256
+#, javascript-format
+msgid "Version %s is available"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:257
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:272
+msgid "Update"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:260
+msgid "Ledge is up to date"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:264
+msgid "Updating…"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:274
+#, javascript-format
+msgid "Could not update: %s"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:275
+msgid "Could not check for updates. Check your internet connection."
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:284
 msgid "Widgets"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:196
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:285
 msgid ""
 "Hidden widgets are not loaded at all. You can also rearrange them from the "
 "panel."
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:231
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:320
 msgid "Move up"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:232
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:321
 msgid "Move down"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/updates.js:67
+#, javascript-format
+msgid "Ledge updated to %s"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/updates.js:68
+msgid "Log out and back in to start using it."
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/updates.js:71
+#, javascript-format
+msgid "Ledge %s is available"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/updates.js:72
+msgid "Update it in Ledge’s settings."
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/agenda.js:21

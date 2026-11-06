@@ -9,6 +9,8 @@ stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
 
 cp -r "$src"/*.js "$src"/{metadata.json,stylesheet.css,widgets,schemas} "$stage/"
+# The touchpad helper rides along, so an in-place update can refresh it too.
+install -Dm644 "$here/touchd/ledge-touchd.py" "$stage/touchd/ledge-touchd.py"
 rm -f "$stage/schemas/gschemas.compiled"
 glib-compile-schemas "$stage/schemas"
 for po in "$here"/po/*.po; do

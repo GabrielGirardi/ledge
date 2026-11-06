@@ -14,6 +14,7 @@ import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/ex
 import {EditMode} from './editMode.js';
 import {Glass} from './glass.js';
 import {timeLocale} from './locale.js';
+import {AutoUpdater} from './updates.js';
 import {AgendaWidget} from './widgets/agenda.js';
 import {BatteriesWidget} from './widgets/batteries.js';
 import {MediaWidget} from './widgets/media.js';
@@ -775,9 +776,12 @@ class Ledge {
 export default class LedgeExtension extends Extension {
     enable() {
         this._ledge = new Ledge(this);
+        this._updater = new AutoUpdater(this, this.getSettings());
     }
 
     disable() {
+        this._updater.destroy();
+        this._updater = null;
         this._ledge.destroy();
         this._ledge = null;
     }

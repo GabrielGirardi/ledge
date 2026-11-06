@@ -214,3 +214,26 @@ Each widget is a module in `widgets/` that exposes:
 weather geocoding language. UI strings use gettext with the domain `ledge`.
 This matters for users who run, for example, an English UI with Brazilian date
 formats.
+
+## Updates
+
+`updater.js` holds the update logic, shared by the preferences and the shell;
+`updates.js` is the daily check inside the shell.
+
+1. List the releases with the GitHub API, and pick the highest SemVer tag
+   that has both the zip and `metadata.json` attached, downloaded only from
+   this repository. GitHub marks every 0.x release as a pre-release, so that
+   flag is not a filter.
+2. Download that `metadata.json` and check that it lists the running GNOME
+   Shell version. Only then download the zip.
+3. Run `gnome-extensions install --force` on the zip. The zip also carries
+   the touchpad helper; when `install.sh` installed one in
+   `~/.local/lib/ledge`, it is replaced and the service restarted.
+
+The new code runs from the next login. GNOME Shell on Wayland cannot reload
+an extension in place. The version on disk tells the preferences that an
+update is waiting.
+
+Only a copy in `~/.local/share/gnome-shell/extensions/` that is not a symlink
+updates itself. A distribution package or a development checkout never does.
+The updater's pure functions have unit tests in `tests/unit/`.

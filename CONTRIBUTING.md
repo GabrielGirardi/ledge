@@ -20,7 +20,7 @@ Issues labeled `good first issue` are a good place to start.
 
 ## Development setup
 
-You need GNOME Shell 46 (which brings `gjs`, for the unit tests), Node.js
+You need GNOME Shell 46 to 49 (which brings `gjs`, for the unit tests), Node.js
 (only to run syntax checks), Python 3 with PyGObject, and the `gettext`,
 `glib-compile-schemas`, and `zip` tools.
 
@@ -35,6 +35,8 @@ cd ledge
 the touchpad helper attached. Use it for almost all work: on Wayland, the
 GNOME Shell you are logged into cannot reload extension code without a log
 out. To try a change, close the nested window and run `nested.sh` again.
+On GNOME 49, which replaced the nested window with `mutter-devkit`, install
+that viewer first (Fedora ships it in `mutter-devel`).
 
 The nested shell has a separate session bus, so it does not see your music
 players or other session services. Test the Now Playing widget either in your
@@ -83,13 +85,20 @@ time you see in them are separate from your real ones.
 
 `tests/ui/` drives a headless GNOME Shell through the development hooks and
 checks the result. It covers opening and closing, picking (whether clicks land
-on what is drawn), multi-monitor placement, and the to-do list. CI runs it on
-every push and pull request.
+on what is drawn), multi-monitor placement, and the to-do list. It also fails
+when Ledge logs a JS error, even if every test passed. CI runs it on every
+push and pull request, against each supported GNOME version.
 
 ```sh
 ./tests/ui/run.sh                                     # everything, about a minute
 ./tests/ui/run.sh test_panel.TodoTest                 # one class
+./scripts/test-gnome.sh 48                            # on GNOME 47, 48, or 49
+./scripts/test-gnome.sh 49 test_panel.TodoTest
 ```
+
+`test-gnome.sh` runs the same tests in a Fedora container that ships that
+GNOME version, so you can test the versions your system does not have. It
+needs Docker or Podman.
 
 Tests click actors by name, not by pixel. Give anything a test needs to reach
 a name that starts with `ledge:` (for example `name: 'ledge:gear'`). In

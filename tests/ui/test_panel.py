@@ -3,6 +3,8 @@
 Each test that guards a past bug names it, so a failure says what came back.
 """
 
+import os
+import signal
 import time
 import unittest
 
@@ -53,6 +55,14 @@ class PanelTest(unittest.TestCase):
                             f"gear not hit at x{dx:+d}: {shell.pick(x + dx, y)}")
         shell.click(x, y)
         shell.wait_for(lambda: shell.state()["state"] == "CLOSED", "closed after the gear")
+
+    def test_gear_opens_the_preferences(self):
+        # The preferences run in their own process, against that GNOME's GTK
+        # and libadwaita; run.sh fails on any JS error they log.
+        shell.open_panel()
+        shell.click_target("gear")
+        prefs = lambda: next((pid for title, pid in shell.state()["windows"] if title == "Ledge"), None)
+        os.kill(shell.wait_for(prefs, "the preferences window", timeout=20), signal.SIGTERM)
 
     def test_opens_on_the_monitor_under_the_pointer(self):
         shell.warp(2200, 400)  # monitor 1

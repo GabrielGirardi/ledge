@@ -754,6 +754,7 @@ class Ledge {
                 [w.actor.name.slice('ledge:card:'.length), w.actor.title.text])),
             pointer: global.get_pointer().slice(0, 2),
             overview: Main.overview.visible,
+            windows: global.get_window_actors().map(a => [a.meta_window.get_title(), a.meta_window.get_pid()]),
             targets,
             texts,
         };

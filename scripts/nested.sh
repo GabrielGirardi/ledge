@@ -18,11 +18,15 @@ ln -sfn "$here/extension/$uuid" "$data/gnome-shell/extensions/$uuid"
 export XDG_DATA_HOME="$data" XDG_CONFIG_HOME="$config" XDG_DATA_DIRS="${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 export LEDGE_DEV=1
 export MUTTER_DEBUG_DUMMY_MODE_SPECS="${LEDGE_NESTED_SIZE:-1600x1000}"
+# GNOME 49 replaced the nested window with a development kit viewer
+# (mutter-devkit; Fedora ships it in mutter-devel).
+mode=--nested
+gnome-shell --help 2>&1 | grep -q -- --devkit && mode=--devkit
 mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/ledge-nested"
 exec dbus-run-session -- bash -c '
   echo "$DBUS_SESSION_BUS_ADDRESS" > "${XDG_RUNTIME_DIR:-/tmp}/ledge-nested/bus"
   python3 "'"$here"'/touchd/ledge-touchd.py" -v &
-  gnome-shell --nested --wayland &
+  gnome-shell '"$mode"' --wayland &
   shell=$!
   sleep 4
   gnome-extensions enable '"$uuid"' || true

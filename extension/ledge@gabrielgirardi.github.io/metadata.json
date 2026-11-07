@@ -3,7 +3,10 @@
   "name": "Ledge",
   "description": "A Today View sidebar that follows a two-finger swipe from the touchpad edge.",
   "shell-version": [
-    "46"
+    "46",
+    "47",
+    "48",
+    "49"
   ],
   "settings-schema": "org.gnome.shell.extensions.ledge",
   "gettext-domain": "ledge",

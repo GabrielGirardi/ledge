@@ -28,6 +28,7 @@ jobs:
           path: dist/*.zip
 
   ui-tests:
+    name: ui-tests (GNOME 46)
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -60,3 +61,17 @@ jobs:
         with:
           name: gnome-shell-log
           path: ${{ runner.temp }}/xdg/ledge-nested/shell.log
+
+  # Newer GNOME releases, each in the Fedora version that ships it.
+  ui-tests-newer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        gnome: ["47", "48", "49"]
+    name: ui-tests (GNOME ${{ matrix.gnome }})
+    steps:
+      - uses: actions/checkout@v4
+      - name: UI tests
+        run: ./scripts/test-gnome.sh ${{ matrix.gnome }}

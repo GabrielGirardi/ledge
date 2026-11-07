@@ -1,3 +1,4 @@
+import Cogl from 'gi://Cogl';
 import GObject from 'gi://GObject';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
@@ -6,6 +7,8 @@ import * as Background from 'resource:///org/gnome/shell/ui/background.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const BLUR_RADIUS = 90;
+// GNOME 48 moved the snippet hooks from Shell to Cogl.
+const SnippetHook = Cogl.SnippetHook ?? Shell.SnippetHook;
 
 const RoundedMask = GObject.registerClass(
 class RoundedMask extends Shell.GLSLEffect {
@@ -17,7 +20,7 @@ class RoundedMask extends Shell.GLSLEffect {
     }
 
     vfunc_build_pipeline() {
-        this.add_glsl_snippet(Shell.SnippetHook.FRAGMENT,
+        this.add_glsl_snippet(SnippetHook.FRAGMENT,
             'uniform vec2 size;\nuniform float radius;\n',
             `vec2 p = cogl_tex_coord_in[0].xy * size;
              vec2 q = abs(p - size * 0.5) - (size * 0.5 - radius);

@@ -43,6 +43,13 @@ class Shell:
             address,
             Gio.DBusConnectionFlags.AUTHENTICATION_CLIENT | Gio.DBusConnectionFlags.MESSAGE_BUS_CONNECTION,
             None, None)
+        # A freshly started headless GNOME 49 drops pointer warps for a few
+        # seconds, and clamps them to the first monitor until one lands.
+        def parked():
+            self.emit("Warp", "(ii)", 100, 100)
+            time.sleep(0.3)
+            return self.state()["pointer"] == [100, 100]
+        self.wait_for(parked, "the pointer to accept warps", timeout=30)
 
     def stop(self):
         self.bus.close_sync(None)

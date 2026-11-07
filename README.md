@@ -7,7 +7,7 @@ Swipe two fingers in from the edge of your touchpad. Your day slides out.
 
 [![CI](https://github.com/GabrielGirardi/ledge/actions/workflows/ci.yml/badge.svg)](https://github.com/GabrielGirardi/ledge/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/GabrielGirardi/ledge?include_prereleases&label=release)](https://github.com/GabrielGirardi/ledge/releases)
-[![GNOME Shell 46](https://img.shields.io/badge/GNOME%20Shell-46-4a86cf?logo=gnome&logoColor=white)](#requirements)
+[![GNOME Shell 46 to 49](https://img.shields.io/badge/GNOME%20Shell-46--49-4a86cf?logo=gnome&logoColor=white)](#requirements)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
 <img src="docs/images/hero.jpg" alt="The Ledge sidebar open on the right side of a GNOME desktop, showing weather, device batteries, today's calendar and the song that is playing" width="900">
@@ -120,7 +120,7 @@ widget is not loaded at all, so it costs nothing.
 
 | | |
 |---|---|
-| GNOME Shell | 46. Versions 47 to 49 are on the roadmap. |
+| GNOME Shell | 46, 47, 48, or 49 |
 | Session | Wayland or X11 |
 | Touchpad | Optional. The gesture needs a multitouch touchpad; the shortcut and the top bar button work without one. |
 | Python | 3.10 or later, with PyGObject (`python3-gi`). Most GNOME systems already ship it. |
@@ -234,7 +234,7 @@ state machine, and how the glass is rendered.
 - [x] Opens on the active monitor
 - [x] Hot edge, edit mode, and choosing and ordering widgets
 - [x] UI regression tests on GNOME Shell, in CI
-- [ ] **0.5:** GNOME Shell 47, 48, and 49
+- [x] GNOME Shell 47, 48, and 49, each tested in CI
 - [ ] **0.6:** more widgets: phone battery (GSConnect), system stats, world clocks, reminders
 - [ ] **0.7:** extensions.gnome.org, AUR, Fedora COPR, `.deb`, and a Rust helper
 

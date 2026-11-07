@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-07
+
 ### Added
 
 - Support for GNOME Shell 47, 48, 49, 50, and 51 (#8, #9).
@@ -180,7 +182,8 @@ First preview.
 - Preferences for the screen side, top bar button, shortcut, and weather city.
 - English and Brazilian Portuguese translations. Dates follow `LC_TIME`.
 
-[Unreleased]: https://github.com/GabrielGirardi/ledge/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/GabrielGirardi/ledge/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/GabrielGirardi/ledge/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/GabrielGirardi/ledge/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/GabrielGirardi/ledge/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/GabrielGirardi/ledge/compare/v0.3.0...v0.3.1

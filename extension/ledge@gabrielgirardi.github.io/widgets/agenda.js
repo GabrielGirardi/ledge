@@ -7,6 +7,7 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {formatTime} from '../locale.js';
 import {cardShell} from './card.js';
+import {VERTICAL} from '../compat.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_EVENTS = 3;
@@ -19,7 +20,7 @@ function isAllDay(event) {
 export class AgendaWidget {
     constructor() {
         this.actor = cardShell('x-office-calendar-symbolic', _('Calendar').toUpperCase());
-        this._list = new St.BoxLayout({vertical: true, style_class: 'ledge-agenda'});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'ledge-agenda'});
         this.actor.add_child(this._list);
 
         this._source = new Calendar.DBusEventSource();
@@ -68,7 +69,7 @@ export class AgendaWidget {
             style_class: ongoing ? 'ledge-event-bar ledge-event-bar-now' : 'ledge-event-bar',
             y_expand: true,
         }));
-        const text = new St.BoxLayout({vertical: true, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        const text = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         const title = new St.Label({text: event.summary, style_class: 'ledge-event-title'});
         title.clutter_text.ellipsize = Pango.EllipsizeMode.END;
 

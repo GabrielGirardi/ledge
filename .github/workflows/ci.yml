@@ -69,7 +69,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gnome: ["47", "48", "49"]
+        gnome: ["47", "48", "49", "50", "51"]
     name: ui-tests (GNOME ${{ matrix.gnome }})
     steps:
       - uses: actions/checkout@v4

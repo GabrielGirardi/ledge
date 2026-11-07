@@ -7,7 +7,7 @@ set -euo pipefail
 here="$(cd "$(dirname "$0")/.." && pwd)"
 gnome="${1:?usage: $0 GNOME_VERSION [unittest args]}"; shift
 case "$gnome" in
-  47) fedora=41 ;; 48) fedora=42 ;; 49) fedora=43 ;; 50) fedora=44 ;;
+  47) fedora=41 ;; 48) fedora=42 ;; 49) fedora=43 ;; 50) fedora=44 ;; 51) fedora=45 ;;
   *) echo "no Fedora image known for GNOME $gnome" >&2; exit 2 ;;
 esac
 engine="$(command -v podman || command -v docker)"

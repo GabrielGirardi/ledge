@@ -8,6 +8,7 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 import {timeLocale} from '../locale.js';
 import {UsageTracker} from '../usage.js';
 import {cardShell} from './card.js';
+import {VERTICAL} from '../compat.js';
 
 const TOP_APPS = 4;
 const BAR_WIDTH = 96;
@@ -58,7 +59,7 @@ export class ScreenTimeWidget {
         this._caption = new St.Label({style_class: 'ledge-card-sub', name: 'ledge:usage-caption'});
         this._chart = new St.BoxLayout({style_class: 'ledge-usage-chart', x_expand: true});
         this._chart.layout_manager.homogeneous = true;
-        this._list = new St.BoxLayout({vertical: true, style_class: 'ledge-usage-list'});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'ledge-usage-list'});
         this.actor.add_child(this._total);
         this.actor.add_child(this._caption);
         this.actor.add_child(this._chart);
@@ -119,7 +120,7 @@ export class ScreenTimeWidget {
         const labelled = daily.length <= 7;
         const weekday = new Intl.DateTimeFormat(timeLocale(), {weekday: 'narrow'});
         daily.forEach(({date, seconds}, i) => {
-            const column = new St.BoxLayout({vertical: true, x_expand: true, style_class: 'ledge-usage-day'});
+            const column = new St.BoxLayout({...VERTICAL, x_expand: true, style_class: 'ledge-usage-day'});
             const slot = new St.Bin({
                 height: CHART_HEIGHT,
                 x_expand: true,

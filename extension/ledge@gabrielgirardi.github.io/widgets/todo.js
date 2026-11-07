@@ -8,6 +8,7 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {JsonStore} from '../store.js';
 import {cardShell} from './card.js';
+import {VERTICAL} from '../compat.js';
 
 const MAX_LENGTH = 200;
 
@@ -89,7 +90,7 @@ export class TodoWidget {
 
         // Same picking fix as the panel's scroll view: clip on the scroll
         // view's allocation, not on the narrower page GNOME 46 reports.
-        this._list = new St.BoxLayout({vertical: true, style_class: 'ledge-todo-list', clip_to_view: false});
+        this._list = new St.BoxLayout({...VERTICAL, style_class: 'ledge-todo-list', clip_to_view: false});
         this._scroll = new UnsqueezableScrollView({
             style_class: 'ledge-todo-scroll vfade',
             name: 'ledge:todo-scroll',

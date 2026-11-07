@@ -10,6 +10,7 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 import {getJson, newSession, searchPlaces} from '../geocode.js';
 import {messagesLanguage} from '../locale.js';
 import {cardShell} from './card.js';
+import {VERTICAL} from '../compat.js';
 
 const STALE_MS = 30 * 60 * 1000;
 // GeoClue answers in a second or two when it can; without Wi-Fi it may never
@@ -53,7 +54,7 @@ export class WeatherWidget {
         this.actor = cardShell('weather-few-clouds-symbolic', _('Weather').toUpperCase());
 
         const body = new St.BoxLayout({style_class: 'ledge-weather'});
-        const text = new St.BoxLayout({vertical: true, x_expand: true});
+        const text = new St.BoxLayout({...VERTICAL, x_expand: true});
         this._temp = new St.Label({style_class: 'ledge-card-value'});
         this._sub = new St.Label({style_class: 'ledge-card-sub'});
         text.add_child(this._temp);

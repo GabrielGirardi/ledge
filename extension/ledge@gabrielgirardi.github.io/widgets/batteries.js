@@ -7,6 +7,7 @@ import St from 'gi://St';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {cardShell} from './card.js';
+import {VERTICAL} from '../compat.js';
 
 const UPOWER = 'org.freedesktop.UPower';
 const UPOWER_PATH = '/org/freedesktop/UPower';
@@ -35,7 +36,7 @@ const ICONS = {
 
 class BatteryRing {
     constructor() {
-        this.actor = new St.BoxLayout({vertical: true, style_class: 'ledge-battery'});
+        this.actor = new St.BoxLayout({...VERTICAL, style_class: 'ledge-battery'});
         const bin = new St.Widget({layout_manager: new Clutter.BinLayout(), width: RING_SIZE, height: RING_SIZE});
         this._area = new St.DrawingArea({width: RING_SIZE, height: RING_SIZE});
         this._area.connect('repaint', area => this._paint(area));

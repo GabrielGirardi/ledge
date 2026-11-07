@@ -22,6 +22,7 @@ import {ScreenTimeWidget} from './widgets/screentime.js';
 import {TodoWidget} from './widgets/todo.js';
 import {WeatherWidget} from './widgets/weather.js';
 import {shownWidgets} from './widgets/catalog.js';
+import {VERTICAL} from './compat.js';
 
 const FACTORIES = {
     'weather': settings => new WeatherWidget(settings),
@@ -69,6 +70,12 @@ function rubberBand(p) {
     return Math.max(0, p);
 }
 
+// GNOME 51 removed Clutter.get_default_backend(); the stage's context has
+// the backend instead.
+function devSeat() {
+    return (global.stage.context?.get_backend() ?? Clutter.get_default_backend()).get_default_seat();
+}
+
 class Ledge {
     constructor(extension) {
         const settings = extension.getSettings();
@@ -97,7 +104,7 @@ class Ledge {
         // clicks while still painting. Clip on the scroll view's real
         // allocation instead.
         this._content = new St.BoxLayout({
-            vertical: true,
+            ...VERTICAL,
             style_class: 'ledge-content',
             x_expand: true,
             clip_to_view: false,
@@ -112,7 +119,7 @@ class Ledge {
             y_expand: true,
         });
         const header = new St.BoxLayout({style_class: 'ledge-header'});
-        const heading = new St.BoxLayout({vertical: true, x_expand: true});
+        const heading = new St.BoxLayout({...VERTICAL, x_expand: true});
         this._weekday = new St.Label({style_class: 'ledge-weekday'});
         this._date = new St.Label({style_class: 'ledge-date', name: 'ledge:date'});
         heading.add_child(this._weekday);
@@ -639,7 +646,7 @@ class Ledge {
                 console.log(`ledge-pick ${x},${y}: ${chain.slice(0, 6).join(' < ')}`);
             }),
             sub('Push', (dx, steps) => {
-                const seat = Clutter.get_default_backend().get_default_seat();
+                const seat = devSeat();
                 this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
                 let i = 0;
                 GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
@@ -649,7 +656,7 @@ class Ledge {
             }),
             sub('Drag', (x, y, dy, steps) => {
                 // Press at (x, y), move dy pixels over `steps` frames, release.
-                const seat = Clutter.get_default_backend().get_default_seat();
+                const seat = devSeat();
                 this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
                 seat.warp_pointer(x, y);
                 let i = -10; // let the warp land before pressing
@@ -667,13 +674,13 @@ class Ledge {
                 });
             }),
             sub('Overview', show => (show ? Main.overview.show() : Main.overview.hide())),
-            sub('Warp', (x, y) => Clutter.get_default_backend().get_default_seat().warp_pointer(x, y)),
+            sub('Warp', (x, y) => devSeat().warp_pointer(x, y)),
             sub('State', () => console.log(`ledge-state ${Object.keys(State)[this._state]} monitor=${this._monitorIndex} ` +
                 `strip=${this._strip.x},${this._strip.y} ` +
                 `progress=${this._progress.toFixed(3)} grab=${Boolean(this._grab)} ` +
                 `focus=${global.stage.get_key_focus()?.constructor.name ?? 'none'}`)),
             sub('Click', (x, y) => {
-                const seat = Clutter.get_default_backend().get_default_seat();
+                const seat = devSeat();
                 this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
                 seat.warp_pointer(x, y);
                 // The button must land after the motion has been processed.
@@ -685,7 +692,7 @@ class Ledge {
                 });
             }),
             sub('Scroll', (x, y, steps) => {
-                const seat = Clutter.get_default_backend().get_default_seat();
+                const seat = devSeat();
                 this._devPointer ??= seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
                 seat.warp_pointer(x, y);
                 GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
@@ -698,14 +705,14 @@ class Ledge {
                 });
             }),
             sub('Key', keyval => {
-                const seat = Clutter.get_default_backend().get_default_seat();
+                const seat = devSeat();
                 this._devKeyboard ??= seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
                 const t = GLib.get_monotonic_time();
                 this._devKeyboard.notify_keyval(t, keyval, Clutter.KeyState.PRESSED);
                 this._devKeyboard.notify_keyval(t + 1000, keyval, Clutter.KeyState.RELEASED);
             }),
             sub('Type', text => {
-                const seat = Clutter.get_default_backend().get_default_seat();
+                const seat = devSeat();
                 this._devKeyboard ??= seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
                 let t = GLib.get_monotonic_time();
                 for (const ch of text) {

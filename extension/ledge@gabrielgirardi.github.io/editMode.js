@@ -4,6 +4,7 @@ import St from 'gi://St';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {CATALOG, shownWidgets} from './widgets/catalog.js';
+import {VERTICAL} from './compat.js';
 
 const DRAG_THRESHOLD = 6;
 
@@ -180,7 +181,7 @@ export class EditMode {
         if (!hidden.length)
             return;
 
-        this._tray = new St.BoxLayout({vertical: true, style_class: 'ledge-edit-tray'});
+        this._tray = new St.BoxLayout({...VERTICAL, style_class: 'ledge-edit-tray'});
         this._tray.add_child(new St.Label({text: _('Add widgets').toUpperCase(), style_class: 'ledge-card-title'}));
         for (const info of hidden) {
             const row = new St.BoxLayout({style_class: 'ledge-edit-add-row', x_expand: true});

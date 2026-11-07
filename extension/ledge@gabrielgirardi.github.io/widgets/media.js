@@ -9,6 +9,7 @@ import {MprisPlayer} from 'resource:///org/gnome/shell/ui/mpris.js';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {cardShell} from './card.js';
+import {VERTICAL} from '../compat.js';
 
 const MPRIS_PREFIX = 'org.mpris.MediaPlayer2.';
 
@@ -19,7 +20,7 @@ export class MediaWidget {
 
         const body = new St.BoxLayout({style_class: 'ledge-media'});
         this._cover = new St.Icon({style_class: 'ledge-media-cover', icon_size: 56});
-        const text = new St.BoxLayout({vertical: true, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        const text = new St.BoxLayout({...VERTICAL, x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         this._title = new St.Label({style_class: 'ledge-media-title'});
         this._artist = new St.Label({style_class: 'ledge-media-artist'});
         this._title.clutter_text.ellipsize = Pango.EllipsizeMode.END;

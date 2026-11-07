@@ -10,6 +10,12 @@ fail() { echo "FAIL: $*"; failed=1; }
 step "JavaScript syntax"
 while IFS= read -r f; do node --check "$f" || fail "$f"; done < <(find "$ext" -name '*.js')
 
+step "GNOME version portability"
+# GNOME 51 removed St.BoxLayout's `vertical`; spread VERTICAL from compat.js.
+if grep -rn --include='*.js' -E '\bvertical: ' "$ext" | grep -v '/compat.js:'; then
+  fail "use ...VERTICAL from compat.js instead of vertical:"
+fi
+
 step "Python syntax"
 for f in "$here/touchd/ledge-touchd.py" "$here"/tools/screenshots/*.py "$here"/tests/ui/*.py; do
   python3 -m py_compile "$f" || fail "$f"

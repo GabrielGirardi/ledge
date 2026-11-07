@@ -1,6 +1,6 @@
 # A Fedora image with one GNOME Shell release, for running the UI tests
 # against GNOME versions the host does not have. Fedora 41 ships GNOME 47,
-# 42 ships 48, 43 ships 49, 44 ships 50.
+# 42 ships 48, 43 ships 49, 44 ships 50, 45 ships 51.
 ARG FEDORA=42
 FROM registry.fedoraproject.org/fedora:${FEDORA}
 RUN dnf -y install --setopt=install_weak_deps=False \
@@ -10,5 +10,5 @@ RUN dnf -y install --setopt=install_weak_deps=False \
     && dnf clean all
 # Xwayland needs its socket folder, which only root can create. Without
 # systemd's seats folder, GNOME Shell skips logind, which a container lacks.
-RUN mkdir -m 1777 /tmp/.X11-unix && rm -rf /run/systemd/seats && useradd -m tester
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix && rm -rf /run/systemd/seats && useradd -m tester
 WORKDIR /src

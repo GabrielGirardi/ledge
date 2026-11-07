@@ -1,3 +1,4 @@
+import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
 import GObject from 'gi://GObject';
 import Shell from 'gi://Shell';
@@ -10,7 +11,16 @@ const BLUR_RADIUS = 90;
 // GNOME 48 moved the snippet hooks from Shell to Cogl.
 const SnippetHook = Cogl.SnippetHook ?? Shell.SnippetHook;
 
-const RoundedMask = GObject.registerClass(
+const MASK_DECLARATIONS = 'uniform vec2 size;\nuniform float radius;\n';
+const MASK_CODE = `
+    vec2 p = cogl_tex_coord_in[0].xy * size;
+    vec2 q = abs(p - size * 0.5) - (size * 0.5 - radius);
+    float d = length(max(q, 0.0)) - radius;
+    cogl_color_out *= clamp(0.5 - d, 0.0, 1.0);`;
+
+// Up to GNOME 50, shell effects build on Shell.GLSLEffect. GNOME 51 removed
+// it in favour of Clutter.ShaderEffect taking a Cogl.Snippet.
+const RoundedMask = Shell.GLSLEffect ? GObject.registerClass(
 class RoundedMask extends Shell.GLSLEffect {
     _init(radius) {
         super._init();
@@ -20,19 +30,30 @@ class RoundedMask extends Shell.GLSLEffect {
     }
 
     vfunc_build_pipeline() {
-        this.add_glsl_snippet(SnippetHook.FRAGMENT,
-            'uniform vec2 size;\nuniform float radius;\n',
-            `vec2 p = cogl_tex_coord_in[0].xy * size;
-             vec2 q = abs(p - size * 0.5) - (size * 0.5 - radius);
-             float d = length(max(q, 0.0)) - radius;
-             cogl_color_out *= clamp(0.5 - d, 0.0, 1.0);`,
-            false);
+        this.add_glsl_snippet(SnippetHook.FRAGMENT, MASK_DECLARATIONS, MASK_CODE, false);
     }
 
     vfunc_paint_target(node, paintContext) {
         const [width, height] = this.actor.get_size();
         this.set_uniform_float(this._sizeLocation, 2, [width, height]);
         this.set_uniform_float(this._radiusLocation, 1, [this._radius]);
+        super.vfunc_paint_target(node, paintContext);
+    }
+}) : GObject.registerClass(
+class RoundedMask extends Clutter.ShaderEffect {
+    _init(radius) {
+        super._init();
+        this._radius = radius;
+    }
+
+    vfunc_get_static_snippet() {
+        return Cogl.Snippet.new(Cogl.SnippetHook.FRAGMENT, MASK_DECLARATIONS, MASK_CODE);
+    }
+
+    vfunc_paint_target(node, paintContext) {
+        const [width, height] = this.actor.get_size();
+        this.set_uniform_float('size', 2, [width, height]);
+        this.set_uniform_float('radius', 1, [this._radius]);
         super.vfunc_paint_target(node, paintContext);
     }
 });

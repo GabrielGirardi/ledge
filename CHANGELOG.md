@@ -9,17 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for GNOME Shell 47, 48, and 49 (#8, #9).
+- Support for GNOME Shell 47, 48, 49, 50, and 51 (#8, #9).
 
 ### Fixed
 
 - GNOME 48 and later: the panel's rounded corners failed to draw, because
-  GNOME moved the shader hooks Ledge uses.
+  GNOME moved the shader hooks Ledge uses. GNOME 51 replaced the shader
+  effect itself, and removed `St.BoxLayout`'s `vertical` property.
 
 ### Development
 
-- CI runs the UI tests on GNOME 46, 47, 48, and 49. `scripts/test-gnome.sh`
-  runs them locally on 47 to 49, in a container (#10).
+- CI runs the UI tests on every supported GNOME version, 46 to 51.
+  `scripts/test-gnome.sh` runs them locally on 47 to 51, in a container (#10).
+- `scripts/check.sh` rejects `vertical:` on box layouts; use `VERTICAL` from
+  `compat.js`.
 - The UI tests fail when Ledge logs a JS error, and open the preferences.
 - `scripts/nested.sh` uses GNOME 49's `mutter-devkit`.
 

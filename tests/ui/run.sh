@@ -8,7 +8,7 @@ here="$(cd "$(dirname "$0")" && pwd)"
 cd "$here"
 status=0
 python3 -m unittest -v "$@" || status=$?
-log="${XDG_RUNTIME_DIR:-/tmp}/ledge-nested/shell.log"
+log="${XDG_RUNTIME_DIR:-/tmp}/ledge-headless/shell.log"
 errors="$(grep -A15 'JS ERROR' "$log" | grep -B15 'extensions/ledge@' || true)"
 if [ -n "$errors" ]; then
   printf 'Ledge logged JS errors:\n%s\n' "$errors" >&2

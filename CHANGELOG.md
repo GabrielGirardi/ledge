@@ -12,11 +12,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - System widget: CPU, memory, and disk use, and the app weighing on the
   machine the most right now, counted with all its helper processes. It reads
   only while the panel is open (#12).
+- Batteries: phones paired with GSConnect and connected show their battery
+  next to the other devices (#11).
 
 ### Changed
 
 - The settings say when GitHub is limiting update checks from your network,
   instead of blaming the internet connection.
+
+### Development
+
+- The UI tests use their own folder, `$XDG_RUNTIME_DIR/ledge-headless`, so
+  they no longer reset an open nested shell.
+- `tests/ui/fake_gsconnect.py` stands in for GSConnect with a fictional phone.
 
 ## [0.5.0] - 2026-11-07
 

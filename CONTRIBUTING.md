@@ -57,7 +57,7 @@ LEDGE_MONITORS="1600x1000 1280x800" ./scripts/headless.sh   # two monitors
 ./scripts/dev-signal.sh Toggle                # open the panel
 ./scripts/dev-signal.sh Click 300 500         # click outside it
 ./scripts/dev-signal.sh State                 # log state, grab, and key focus
-grep ledge-state "$XDG_RUNTIME_DIR/ledge-nested/shell.log"
+grep ledge-state "$XDG_RUNTIME_DIR/ledge-headless/shell.log"
 ./scripts/headless.sh --stop
 ```
 
@@ -77,8 +77,10 @@ grep ledge-state "$XDG_RUNTIME_DIR/ledge-nested/shell.log"
 `nested.sh` also sets `LEDGE_DEV=1`, so the same hooks work there. The hooks
 never load in a normal session.
 
-Both shells use private data and config folders under `$XDG_RUNTIME_DIR/ledge-nested`.
-An installed copy of Ledge stays untouched, and the to-do list and screen
+Each shell has its own private data and config folders, under
+`$XDG_RUNTIME_DIR/ledge-nested` and `$XDG_RUNTIME_DIR/ledge-headless`, so the
+UI tests can run while a nested shell is open. `dev-signal.sh` talks to the
+headless shell while one runs, and to the nested one otherwise. An installed copy of Ledge stays untouched, and the to-do list and screen
 time you see in them are separate from your real ones.
 
 ### UI tests

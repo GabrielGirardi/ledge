@@ -63,8 +63,15 @@ comes from
 [Open-Meteo](https://open-meteo.com): free, no API key, no account.
 
 **🔋 Batteries**<br>
-One ring per device: your laptop, Bluetooth headphones, mouse, and keyboard.
-A ring turns red when a battery is low.
+One ring per device: your laptop, Bluetooth headphones, mouse, keyboard, and
+your phone when it is connected through
+[GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/). A ring
+turns red when a battery is low.
+
+**🖥️ System**<br>
+CPU, memory, and disk use, and the app weighing on your machine right now,
+counted with all its helper processes. It only reads while the panel is open.
+Off by default; add it from **Add widgets**.
 
 </td>
 <td width="50%" valign="top">

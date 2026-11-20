@@ -5,6 +5,7 @@ import St from 'gi://St';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {cardShell} from './card.js';
+import {PhoneBatteries} from './phones.js';
 import {Ring} from './ring.js';
 
 const UPOWER = 'org.freedesktop.UPower';
@@ -31,6 +32,15 @@ const ICONS = {
     19: 'audio-headphones-symbolic',
 };
 
+function showBattery(ring, icon, percentage, charging) {
+    ring.update({
+        icon,
+        fraction: percentage / 100,
+        label: `${charging ? '⚡' : ''}${Math.round(percentage)}%`,
+        alert: percentage <= LOW_PERCENT && !charging,
+    });
+}
+
 export class BatteriesWidget {
     constructor() {
         this.actor = cardShell('battery-good-symbolic', _('Batteries').toUpperCase());
@@ -50,6 +60,9 @@ export class BatteriesWidget {
                     else
                         this._remove(path);
                 }));
+
+        this._phones = new Map();
+        this._phoneSource = new PhoneBatteries((id, battery) => this._syncPhone(id, battery));
 
         Gio.DBus.system.call(UPOWER, UPOWER_PATH, UPOWER, 'EnumerateDevices', null,
             new GLib.VariantType('(ao)'), Gio.DBusCallFlags.NONE, -1, this._cancellable,
@@ -113,12 +126,24 @@ export class BatteriesWidget {
                     this._row.add_child(entry.ring.actor);
             }
             const charging = prop('State') === STATE_CHARGING;
-            entry.ring.update({
-                icon: ICONS[type] ?? 'battery-symbolic',
-                fraction: percentage / 100,
-                label: `${charging ? '⚡' : ''}${Math.round(percentage)}%`,
-                alert: percentage <= LOW_PERCENT && !charging,
-            });
+            showBattery(entry.ring, ICONS[type] ?? 'battery-symbolic', percentage, charging);
+        }
+        this._syncVisible();
+    }
+
+    /** Phones from GSConnect, after the devices UPower knows. */
+    _syncPhone(id, battery) {
+        let ring = this._phones.get(id);
+        if (!battery) {
+            ring?.actor.destroy();
+            this._phones.delete(id);
+        } else {
+            if (!ring) {
+                ring = new Ring({name: 'ledge:phone'});
+                this._phones.set(id, ring);
+                this._row.add_child(ring.actor);
+            }
+            showBattery(ring, 'phone-symbolic', battery.percentage, battery.charging);
         }
         this._syncVisible();
     }
@@ -128,6 +153,7 @@ export class BatteriesWidget {
     }
 
     destroy() {
+        this._phoneSource.destroy();
         this._cancellable.cancel();
         this._subscriptions.forEach(id => Gio.DBus.system.signal_unsubscribe(id));
         for (const entry of this._devices.values()) {

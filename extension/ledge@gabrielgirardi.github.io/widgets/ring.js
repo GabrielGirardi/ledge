@@ -10,7 +10,7 @@ const RED = [1, 0.27, 0.23];
 
 /** An icon or a short value inside a progress ring, with a label underneath. */
 export class Ring {
-    /** `name` names the value in the middle, for the tests. */
+    /** For the tests, `name` names the value in the middle, and `<name>-label` the label. */
     constructor({color = GREEN, name = null} = {}) {
         this.actor = new St.BoxLayout({...VERTICAL, style_class: 'ledge-battery'});
         const bin = new St.Widget({layout_manager: new Clutter.BinLayout(), width: SIZE, height: SIZE});
@@ -31,7 +31,11 @@ export class Ring {
         bin.add_child(this._area);
         bin.add_child(this._icon);
         bin.add_child(this._value);
-        this._label = new St.Label({style_class: 'ledge-battery-label', x_align: Clutter.ActorAlign.CENTER});
+        this._label = new St.Label({
+            style_class: 'ledge-battery-label',
+            x_align: Clutter.ActorAlign.CENTER,
+            name: name && `${name}-label`,
+        });
         this.actor.add_child(bin);
         this.actor.add_child(this._label);
         this._color = color;

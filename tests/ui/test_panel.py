@@ -6,10 +6,12 @@ Each test that guards a past bug names it, so a failure says what came back.
 import os
 import re
 import signal
+import subprocess
+import sys
 import time
 import unittest
 
-from harness import DATA as DATA_DIR, ESCAPE, Shell
+from harness import DATA as DATA_DIR, ESCAPE, STATE_DIR, Shell
 
 DOWN = 65364
 DEFAULT_WIDGETS = "['weather', 'batteries', 'calendar', 'todo', 'screen-time', 'media']"
@@ -296,6 +298,36 @@ class SystemTest(unittest.TestCase):
         finally:
             shell.close_panel()
             shell.set_setting("widgets", DEFAULT_WIDGETS)
+
+
+class PhoneTest(unittest.TestCase):
+    def setUp(self):
+        self.phone = subprocess.Popen(
+            [sys.executable, "-I", os.path.join(os.path.dirname(__file__), "fake_gsconnect.py")],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True,
+            env=dict(os.environ, DBUS_SESSION_BUS_ADDRESS=(STATE_DIR / "bus").read_text().strip()))
+        self.assertEqual(self.phone.stdout.readline().strip(), "ready")
+        shell.set_setting("widgets", "['batteries']")
+        shell.open_panel()
+
+    def tearDown(self):
+        shell.close_panel()
+        shell.set_setting("widgets", DEFAULT_WIDGETS)
+        self.phone.communicate("quit\n", timeout=5)
+
+    def send(self, command):
+        self.phone.stdin.write(command + "\n")
+        self.phone.stdin.flush()
+
+    def label(self):
+        return shell.state()["texts"].get("phone-label")
+
+    def test_follows_the_phone_from_gsconnect(self):
+        shell.wait_for(lambda: self.label() == "80%", "the phone at 80%")
+        self.send("battery 50 true")
+        shell.wait_for(lambda: self.label() == "⚡50%", "charging at 50%")
+        self.send("connected false")
+        shell.wait_for(lambda: self.label() is None, "the phone gone once disconnected")
 
 
 class ScreenTimeTest(unittest.TestCase):

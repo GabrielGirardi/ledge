@@ -6,7 +6,7 @@
 set -euo pipefail
 here="$(cd "$(dirname "$0")/.." && pwd)"
 uuid="ledge@gabrielgirardi.github.io"
-state="${XDG_RUNTIME_DIR:-/tmp}/ledge-nested"
+state="${XDG_RUNTIME_DIR:-/tmp}/ledge-headless"
 
 stop() {
   for p in $(pgrep -x gnome-shell || true); do

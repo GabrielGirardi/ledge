@@ -19,7 +19,7 @@ gi.require_version("Gio", "2.0")
 from gi.repository import Gio, GLib  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-STATE_DIR = Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "ledge-nested"
+STATE_DIR = Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "ledge-headless"
 DATA = STATE_DIR / "data" / "ledge"
 
 SIGNAL_PATH = "/io/github/gabrielgirardi/Ledge/Touchpad"

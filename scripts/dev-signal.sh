@@ -14,8 +14,12 @@
 #   dev-signal.sh State | Dump           log panel state / layer allocations
 #
 # Results of State and Dump go to the shell log (headless.sh prints its path).
+# Signals go to the headless shell while one runs, otherwise to nested.sh's.
 set -euo pipefail
 state="${XDG_RUNTIME_DIR:-/tmp}/ledge-nested"
+for p in $(pgrep -x gnome-shell || true); do
+  tr '\0' ' ' < "/proc/$p/cmdline" | grep -q -- '--headless' && state="${XDG_RUNTIME_DIR:-/tmp}/ledge-headless"
+done
 export DBUS_SESSION_BUS_ADDRESS="$(cat "$state/bus")"
 emit() {
   gdbus emit --session --object-path /io/github/gabrielgirardi/Ledge/Touchpad \

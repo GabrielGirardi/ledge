@@ -11,11 +11,23 @@ export function newSession() {
     return new Soup.Session({user_agent: 'Ledge (GNOME Shell extension)', timeout: 15});
 }
 
+export class HttpError extends Error {
+    constructor(status, url) {
+        super(`HTTP ${status} from ${url}`);
+        this.status = status;
+    }
+
+    /** The server refused because it was asked too often (GitHub: 403 or 429). */
+    get rateLimited() {
+        return this.status === 403 || this.status === 429;
+    }
+}
+
 export async function getJson(session, url, cancellable = null) {
     const message = Soup.Message.new('GET', url);
     const bytes = await session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, cancellable);
     if (message.get_status() !== Soup.Status.OK)
-        throw new Error(`HTTP ${message.get_status()} from ${url}`);
+        throw new HttpError(message.get_status(), url);
     return JSON.parse(new TextDecoder().decode(bytes.get_data()));
 }
 

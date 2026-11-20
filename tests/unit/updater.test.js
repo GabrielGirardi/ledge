@@ -1,7 +1,9 @@
 // Unit tests for updater.js. Run: gjs -m tests/unit/updater.test.js
+import Soup from 'gi://Soup?version=3.0';
 import System from 'system';
 
-import {isNewer, parseVersion, pickRelease, supportsShell, UUID} from '../../extension/ledge@gabrielgirardi.github.io/updater.js';
+import {HttpError, newSession} from '../../extension/ledge@gabrielgirardi.github.io/geocode.js';
+import {findUpdate, isNewer, parseVersion, pickRelease, supportsShell, UUID} from '../../extension/ledge@gabrielgirardi.github.io/updater.js';
 
 let failures = 0;
 const check = (name, actual, expected) => {
@@ -49,6 +51,20 @@ check('nothing to pick', pickRelease([]), null);
 
 check('shell major matches a point release', supportsShell({'shell-version': ['46']}, '46.2'), true);
 check('other shells do not match', supportsShell({'shell-version': ['46', '47']}, '48.1'), false);
+
+// A local server that answers like GitHub does once a network has used up
+// its hourly allowance.
+const server = new Soup.Server();
+server.add_handler(null, (_server, msg) => {
+    msg.set_status(403, null);
+    msg.set_response('application/json', Soup.MemoryUse.COPY, new TextEncoder().encode('{"message":"API rate limit exceeded"}'));
+});
+server.listen_local(0, Soup.ServerListenOptions.IPV4_ONLY);
+const url = `${server.get_uris()[0].to_string()}releases`;
+const error = await findUpdate(newSession(), '0.5.0', '46.0', {url}).catch(e => e);
+check('a refusal from GitHub is reported as rate limiting',
+    [error instanceof HttpError, error.status, error.rateLimited], [true, 403, true]);
+check('a missing page is not rate limiting', new HttpError(404, url).rateLimited, false);
 
 if (failures) {
     print(`${failures} failed`);

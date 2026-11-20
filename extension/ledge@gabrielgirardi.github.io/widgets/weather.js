@@ -65,11 +65,11 @@ export class WeatherWidget {
         this.actor.add_child(body);
 
         this._session = newSession();
-        this._cancellable = new Gio.Cancellable();
+        // One per update. A new place cancels the running update, so the
+        // card never waits on a slow request for a place it no longer shows.
+        this._run = null;
         this._place = null;
         this._fetchedAt = 0;
-        this._busy = false;
-        this._stale = false;
         this._gclue = null;
         this._locating = null;
         this._settingsIds = ['changed::weather-location', 'changed::weather-city']
@@ -82,28 +82,34 @@ export class WeatherWidget {
     }
 
     refresh() {
-        if (this._busy || Date.now() - this._fetchedAt < STALE_MS)
+        if (this._run || Date.now() - this._fetchedAt < STALE_MS)
             return;
-        this._busy = true;
-        this._stale = false;
-        this._update().catch(e => {
-            if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+        const run = this._run = new Gio.Cancellable();
+        this._update(run).catch(e => {
+            if (run.is_cancelled())
                 return;
             console.warn(`Ledge weather: ${e.message}`);
-            if (!this._stale)
-                this._message(_('Could not load the weather'));
+            this._message(_('Could not load the weather'));
         }).finally(() => {
-            this._busy = false;
-            // The place changed while this update ran; it showed the old one.
-            if (this._stale && !this._cancellable.is_cancelled())
-                this.refresh();
+            if (this._run === run)
+                this._run = null;
         });
     }
 
-    /** Forgets the place, so the next refresh looks it up again. */
-    _relocate() {
-        this._stale = this._busy;
+    /**
+     * Forgets the place and looks it up again, dropping any running update.
+     * `blank` clears the card first, for a different place; a device that
+     * moved a few kilometres keeps its reading until the new one arrives.
+     */
+    _relocate({blank = true} = {}) {
+        this._run?.cancel();
+        this._run = null;
+        this._locating?.cancel();
         this._place = null;
+        if (blank) {
+            this.actor.title.text = _('Weather').toUpperCase();
+            this._message(_('Loading…'));
+        }
         this._fetchedAt = 0;
         if (!this._location.get_boolean('enabled'))
             this._gclue = null;
@@ -115,35 +121,35 @@ export class WeatherWidget {
      * preferences; a city typed in Ledge 0.3 or earlier; the device's
      * location, when Location Services are on; the city of the time zone.
      */
-    async _resolvePlace() {
+    async _resolvePlace(run) {
         const [name, latitude, longitude] = this._settings.get_value('weather-location').deepUnpack();
         if (name)
             return {name, latitude, longitude};
 
         const typed = this._settings.get_string('weather-city').trim();
         if (typed)
-            return this._geocode(typed);
+            return this._geocode(typed, run);
 
         if (this._location.get_boolean('enabled')) {
             try {
-                return await this._locate();
+                return await this._locate(run);
             } catch (e) {
-                if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED) && this._cancellable.is_cancelled())
+                if (run.is_cancelled())
                     throw e;
                 console.warn(`Ledge weather: no location from GeoClue, using the time zone: ${e.message}`);
             }
         }
-        return this._geocode(GLib.TimeZone.new_local().get_identifier().split('/').pop().replace(/_/g, ' '));
+        return this._geocode(GLib.TimeZone.new_local().get_identifier().split('/').pop().replace(/_/g, ' '), run);
     }
 
-    async _geocode(city) {
-        const [hit] = await searchPlaces(this._session, city, messagesLanguage(), {count: 1, cancellable: this._cancellable});
+    async _geocode(city, run) {
+        const [hit] = await searchPlaces(this._session, city, messagesLanguage(), {count: 1, cancellable: run});
         if (!hit)
             throw new PlaceNotFound(city);
         return hit;
     }
 
-    async _locate() {
+    async _locate(run) {
         if (!this._gclue) {
             // Gives up after a while; destroy() cancels it too.
             const attempt = this._locating = new Gio.Cancellable();
@@ -155,7 +161,7 @@ export class WeatherWidget {
             try {
                 // The desktop id GNOME Shell's own weather uses; GeoClue
                 // allows it whenever Location Services are on.
-                this._gclue = await new Promise((resolve, reject) => {
+                const gclue = await new Promise((resolve, reject) => {
                     Geoclue.Simple.new('org.gnome.Shell', Geoclue.AccuracyLevel.CITY, attempt, (_o, result) => {
                         try {
                             resolve(Geoclue.Simple.new_finish(result));
@@ -164,16 +170,22 @@ export class WeatherWidget {
                         }
                     });
                 });
+                // A relocation or destroy() cancelled this run meanwhile: the
+                // client must not outlive it.
+                if (run.is_cancelled())
+                    throw new GLib.Error(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED, 'Cancelled');
+                this._gclue = gclue;
             } finally {
                 if (timeout)
                     GLib.source_remove(timeout);
-                this._locating = null;
+                if (this._locating === attempt)
+                    this._locating = null;
             }
             this._gclue.get_client().distance_threshold = LOCATE_THRESHOLD_M;
             const gclue = this._gclue;
             gclue.connect('notify::location', () => {
                 if (this._gclue === gclue)
-                    this._relocate();
+                    this._relocate({blank: false});
             });
         }
         const {latitude, longitude} = this._gclue.location;
@@ -182,19 +194,19 @@ export class WeatherWidget {
         return {name: nearest?.get_city_name() ?? _('Your location'), latitude, longitude};
     }
 
-    async _update() {
+    async _update(run) {
         if (!this._place) {
             let place;
             try {
-                place = await this._resolvePlace();
+                place = await this._resolvePlace(run);
             } catch (e) {
                 if (!(e instanceof PlaceNotFound))
                     throw e;
-                if (!this._stale)
+                if (!run.is_cancelled())
                     this._message(_('City “%s” not found').format(e.city));
                 return;
             }
-            if (this._stale)
+            if (run.is_cancelled())
                 return;
             this._place = place;
         }
@@ -204,8 +216,8 @@ export class WeatherWidget {
         const f = await getJson(this._session,
             `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
             '&current=temperature_2m,weather_code,is_day' +
-            '&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1', this._cancellable);
-        if (this._stale)
+            '&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1', run);
+        if (run.is_cancelled())
             return;
         this._fetchedAt = Date.now();
 
@@ -225,7 +237,7 @@ export class WeatherWidget {
     }
 
     destroy() {
-        this._cancellable.cancel();
+        this._run?.cancel();
         this._locating?.cancel();
         this._settingsIds.forEach(id => this._settings.disconnect(id));
         this._location.disconnect(this._locationId);

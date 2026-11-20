@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is hidden; ones that came due while the screen was locked notify when you
   are back, if they are less than a day old.
 
+### Fixed
+
+- Weather: picking another place shows it at once. Before, a slow forecast
+  request for the old place held the card for up to 15 seconds, and the old
+  place's numbers could sit under the new name.
+
 ### Changed
 
 - The settings say when GitHub is limiting update checks from your network,

@@ -15,5 +15,7 @@ image="ledge-test:gnome$gnome"
 "$engine" build -q -t "$image" --build-arg FEDORA="$fedora" \
   -f "$here/tests/ui/container/Containerfile" "$here/tests/ui/container" >/dev/null
 
-exec "$engine" run --rm --init -v "$here:/checkout:ro" "$image" \
+# LEDGE_CONTAINER_ARGS adds options, e.g. --add-host to make a service hang.
+# shellcheck disable=SC2086
+exec "$engine" run --rm --init ${LEDGE_CONTAINER_ARGS:-} -v "$here:/checkout:ro" "$image" \
   /checkout/tests/ui/container/inside.sh "$@"

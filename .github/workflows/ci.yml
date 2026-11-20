@@ -75,3 +75,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: UI tests
         run: ./scripts/test-gnome.sh ${{ matrix.gnome }}
+      # The weather API hung in CI once, and the card kept the old place for
+      # 15 s. An address that never answers makes that the normal case.
+      - name: Weather with an API that never answers
+        if: matrix.gnome == '51'
+        env:
+          LEDGE_CONTAINER_ARGS: --add-host api.open-meteo.com:10.255.255.1
+        run: ./scripts/test-gnome.sh 51 test_panel.WeatherTest

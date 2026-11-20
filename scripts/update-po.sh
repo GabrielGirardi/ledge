@@ -8,5 +8,6 @@ xgettext --from-code=UTF-8 --language=JavaScript --keyword=_ --keyword=N_ --add-
   --package-name=ledge -o "$here/po/ledge.pot" $(cd "$here" && find extension -name '*.js' | sort)
 for po in "$here"/po/*.po; do
   msgmerge --quiet --no-fuzzy-matching --update --backup=none "$po" "$here/po/ledge.pot"
+  msgattrib --no-obsolete -o "$po" "$po"
 done
 echo "updated po/ledge.pot and $(ls "$here"/po/*.po | wc -l) translation(s)"

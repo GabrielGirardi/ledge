@@ -202,11 +202,12 @@ Each widget is a module in `widgets/` that exposes:
 | Widget | Source | Refresh |
 |---|---|---|
 | Weather | Open-Meteo forecast (libsoup 3). The place, in order: one picked in the preferences (`weather-location`), a city typed in 0.3 or earlier (`weather-city`), GeoClue when Location Services are on (named by GWeather's offline city list), the time zone's city. | On open, when the data is older than 30 minutes, and when the place changes |
-| Batteries | UPower over the system bus | Live, through `PropertiesChanged` and `DeviceAdded`/`DeviceRemoved` |
+| Batteries | UPower over the system bus. Phones: GSConnect's `battery` action state `(bsii)` on each device's exported action group (`widgets/phones.js`) | Live, through `PropertiesChanged`, `DeviceAdded`/`DeviceRemoved`, and the action group's state changes |
 | Calendar | GNOME Shell's `DBusEventSource` (the calendar server) | On open, plus change signals |
-| To-do | `~/.local/share/ledge/todo.json` through `JsonStore` | Written on every change |
+| To-do | `TodoModel` (`todoModel.js`), which owns `~/.local/share/ledge/todo.json` and the reminders. It lives as long as Ledge is enabled, so reminders fire while the card is hidden. `reminders.js` reads a trailing time off a new task | Written on every change. Reminders checked every 30 s and at the exact due time |
 | Screen Time | `UsageTracker` (`usage.js`): `Shell.WindowTracker` focus changes, minus idle (2 min) and locked time | Always running. Saved every 60 s to `~/.local/share/ledge/usage.json`, which keeps 30 days, the longest range the card shows |
 | Now Playing | GNOME Shell's `MprisPlayer`, one per `org.mpris.MediaPlayer2.*` name | Live |
+| System | `sysstats.js`: `/proc/stat`, `/proc/meminfo`, the home file system, and per app the `cpu.stat` and `memory.stat` (anonymous memory) of each scope under the user's `app.slice` | Every 2 s, only while the card is mapped |
 
 ## Locale
 

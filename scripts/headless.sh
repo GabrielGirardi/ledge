@@ -8,11 +8,16 @@ here="$(cd "$(dirname "$0")/.." && pwd)"
 uuid="ledge@gabrielgirardi.github.io"
 state="${XDG_RUNTIME_DIR:-/tmp}/ledge-headless"
 
-stop() {
+# This script's shell: the one using its data folder. Another headless shell,
+# such as one in a scripts/test-gnome.sh container, is left alone.
+ours() {
   for p in $(pgrep -x gnome-shell || true); do
-    tr '\0' ' ' < "/proc/$p/cmdline" | grep -q -- '--headless' && kill "$p"
+    tr '\0' '\n' < "/proc/$p/environ" 2>/dev/null | grep -qxF "XDG_DATA_HOME=$state/data" && echo "$p"
   done
   return 0
+}
+stop() {
+  for p in $(ours); do kill "$p"; done
 }
 [ "${1:-}" = "--stop" ] && { stop; exit 0; }
 stop; sleep 1
@@ -36,15 +41,12 @@ mkdir -p "$state/config"
 
 for _ in $(seq 60); do
   sleep 1
-  pid=""
-  for p in $(pgrep -x gnome-shell || true); do
-    tr '\0' ' ' < "/proc/$p/cmdline" | grep -q -- '--headless' && pid="$p"
-  done
+  pid="$(ours | tail -1)"
   [ -n "$pid" ] || continue
   tr '\0' '\n' < "/proc/$pid/environ" | sed -n 's/^DBUS_SESSION_BUS_ADDRESS=//p' > "$state/bus"
   export DBUS_SESSION_BUS_ADDRESS="$(cat "$state/bus")"
   gnome-extensions enable "$uuid" 2>/dev/null || true
-  if gnome-extensions info "$uuid" 2>/dev/null | grep -q 'State: ACTIVE'; then
+  if LC_ALL=C gnome-extensions info "$uuid" 2>/dev/null | grep -q 'State: ACTIVE'; then
     # Apps started over D-Bus (the preferences window) must open on this
     # shell's display, not on the session the script was started from.
     socket="$(ls "${XDG_RUNTIME_DIR:-/tmp}" | grep -E '^wayland-[0-9]+$' | grep -vxF "$sockets_before" | tail -1 || true)"

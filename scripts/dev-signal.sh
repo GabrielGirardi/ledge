@@ -17,8 +17,9 @@
 # Signals go to the headless shell while one runs, otherwise to nested.sh's.
 set -euo pipefail
 state="${XDG_RUNTIME_DIR:-/tmp}/ledge-nested"
+headless="${XDG_RUNTIME_DIR:-/tmp}/ledge-headless"
 for p in $(pgrep -x gnome-shell || true); do
-  tr '\0' ' ' < "/proc/$p/cmdline" | grep -q -- '--headless' && state="${XDG_RUNTIME_DIR:-/tmp}/ledge-headless"
+  tr '\0' '\n' < "/proc/$p/environ" 2>/dev/null | grep -qxF "XDG_DATA_HOME=$headless/data" && state="$headless"
 done
 export DBUS_SESSION_BUS_ADDRESS="$(cat "$state/bus")"
 emit() {

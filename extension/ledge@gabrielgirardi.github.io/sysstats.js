@@ -48,6 +48,15 @@ export function appIdFromUnit(unit) {
     return null;
 }
 
+/**
+ * Bytes an app holds, from its cgroup's memory.stat: its own memory, without
+ * the cache of files it has read, which the kernel gives back on demand and
+ * System Monitor does not count either.
+ */
+export function appMemory(memoryStat) {
+    return Number(/^anon (\d+)/m.exec(memoryStat)?.[1] ?? 0);
+}
+
 /** "used of total" as a fraction, 0 when nothing is known. */
 export const share = ({used, total}) => (total > 0 ? used / total : 0);
 
@@ -84,13 +93,14 @@ export class SystemSampler {
             if (!appId)
                 return;
             try {
-                const [stat, memory] = await Promise.all([
+                const [stat, memoryStat] = await Promise.all([
                     readText(`${dir}/${unit}/cpu.stat`, cancellable),
-                    readText(`${dir}/${unit}/memory.current`, cancellable),
+                    readText(`${dir}/${unit}/memory.stat`, cancellable),
                 ]);
                 const usec = Number(/^usage_usec (\d+)/m.exec(stat)?.[1] ?? 0);
+                const memory = appMemory(memoryStat);
                 const prev = times.get(appId);
-                times.set(appId, {usec: usec + (prev?.usec ?? 0), memory: Number(memory) + (prev?.memory ?? 0)});
+                times.set(appId, {usec: usec + (prev?.usec ?? 0), memory: memory + (prev?.memory ?? 0)});
             } catch (e) {
                 // The app quit between listing and reading.
             }

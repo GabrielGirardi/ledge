@@ -18,6 +18,7 @@ export class PhoneBatteries {
         this._onChange = onChange;
         this._devices = new Map();
         this._manager = null;
+        this._managerIds = [];
         this._cancellable = null;
         this._watchId = Gio.bus_watch_name(Gio.BusType.SESSION, NAME, Gio.BusNameWatcherFlags.NONE,
             () => this._connect(), () => this._disconnect());
@@ -35,10 +36,12 @@ export class PhoneBatteries {
                         console.warn(`Ledge phones: ${e.message}`);
                     return;
                 }
-                this._manager.connect('object-added', (_m, object) => this._add(object));
-                this._manager.connect('object-removed', (_m, object) => this._remove(object.get_object_path()));
-                this._manager.connect('interface-proxy-properties-changed', (_m, object) =>
-                    this._sync(object.get_object_path()));
+                this._managerIds = [
+                    this._manager.connect('object-added', (_m, object) => this._add(object)),
+                    this._manager.connect('object-removed', (_m, object) => this._remove(object.get_object_path())),
+                    this._manager.connect('interface-proxy-properties-changed', (_m, object) =>
+                        this._sync(object.get_object_path())),
+                ];
                 this._manager.get_objects().forEach(object => this._add(object));
             });
     }
@@ -48,6 +51,8 @@ export class PhoneBatteries {
         this._cancellable = null;
         for (const path of [...this._devices.keys()])
             this._remove(path);
+        this._managerIds.forEach(id => this._manager.disconnect(id));
+        this._managerIds = [];
         this._manager = null;
     }
 

@@ -1,7 +1,7 @@
 // Unit tests for sysstats.js. Run: gjs -m tests/unit/sysstats.test.js
 import System from 'system';
 
-import {appIdFromUnit, parseMeminfo, parseProcStat, share, SystemSampler} from '../../extension/ledge@gabrielgirardi.github.io/sysstats.js';
+import {appIdFromUnit, appMemory, parseMeminfo, parseProcStat, share, SystemSampler} from '../../extension/ledge@gabrielgirardi.github.io/sysstats.js';
 
 let failures = 0;
 const check = (name, actual, expected) => {
@@ -19,6 +19,8 @@ check('cpu: waiting on disk is idle',
 check('memory: used is what is not available',
     parseMeminfo('MemTotal:       16000000 kB\nMemFree:  1000 kB\nMemAvailable:    4000000 kB\n'),
     {used: 12000000 * 1024, total: 16000000 * 1024});
+check('app memory leaves out the file cache',
+    appMemory('anon 1000000\nfile 5000000\nkernel 20000\n'), 1000000);
 check('share of nothing is 0', share({used: 5, total: 0}), 0);
 
 check('app started by GNOME', appIdFromUnit('app-gnome-org.gnome.Nautilus-4123.scope'), 'org.gnome.Nautilus.desktop');

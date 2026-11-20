@@ -12,14 +12,22 @@ export function newSession() {
 }
 
 export class HttpError extends Error {
-    constructor(status, url) {
+    /** `headers` is the response's Soup.MessageHeaders, if any. */
+    constructor(status, url, headers = null) {
         super(`HTTP ${status} from ${url}`);
         this.status = status;
-    }
-
-    /** The server refused because it was asked too often (GitHub: 403 or 429). */
-    get rateLimited() {
-        return this.status === 403 || this.status === 429;
+        // GitHub says how many requests are left and when the count resets,
+        // or, for its secondary limits, how many seconds to wait.
+        const left = headers?.get_one('x-ratelimit-remaining');
+        const reset = Number(headers?.get_one('x-ratelimit-reset'));
+        const wait = Number(headers?.get_one('retry-after'));
+        this.rateLimited = status === 429 || (status === 403 && (left === '0' || wait > 0));
+        /** When asking again will work, in milliseconds since the epoch, or null. */
+        this.retryAt = null;
+        if (this.rateLimited && wait > 0)
+            this.retryAt = Date.now() + wait * 1000;
+        else if (this.rateLimited && reset > 0)
+            this.retryAt = reset * 1000;
     }
 }
 
@@ -27,7 +35,7 @@ export async function getJson(session, url, cancellable = null) {
     const message = Soup.Message.new('GET', url);
     const bytes = await session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, cancellable);
     if (message.get_status() !== Soup.Status.OK)
-        throw new HttpError(message.get_status(), url);
+        throw new HttpError(message.get_status(), url, message.get_response_headers());
     return JSON.parse(new TextDecoder().decode(bytes.get_data()));
 }
 

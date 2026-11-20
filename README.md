@@ -87,7 +87,12 @@ other player that supports MPRIS.
 
 **✅ To-do**<br>
 A quick list for today. Type a task and press <kbd>Enter</kbd>. Check it off
-or delete it. The list stays on your machine.
+or delete it. End a task with a time, such as `Call Ana 15:00`, `Call Ana
+tomorrow at 3pm`, or `Ligar pra Ana às 15h`, and Ledge reminds you with a
+notification, even while the card is hidden. Ledge knows today and
+tomorrow; a task that names another day, such as `Dentista segunda 10h`, gets
+no reminder. Without "at", "às", a day, or am/pm, times before 7:00 are read
+as durations (`Estudar 2h`). The list stays on your machine.
 
 **⏱️ Screen Time**<br>
 How long you have used your apps today, in the last 7 days, or in the last

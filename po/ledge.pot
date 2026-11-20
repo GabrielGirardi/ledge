@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-20 00:11-0300\n"
+"POT-Creation-Date: 2026-11-20 01:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,19 +31,23 @@ msgstr ""
 msgid "Add %s"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:134
+#: extension/ledge@gabrielgirardi.github.io/extension.js:139
 msgid "Settings"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:146
+#: extension/ledge@gabrielgirardi.github.io/extension.js:151
 msgid "Edit widgets"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:153
+#: extension/ledge@gabrielgirardi.github.io/extension.js:158
 msgid "Done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:342
+#: extension/ledge@gabrielgirardi.github.io/extension.js:287
+msgid "Reminder from your Ledge to-do list"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/extension.js:369
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:19
 msgid "Today"
 msgstr ""
@@ -179,33 +183,38 @@ msgid "Updating…"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:278
+#, javascript-format
+msgid "GitHub is limiting requests from your network. Try again after %s."
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:281
 msgid "GitHub is limiting requests from your network. Try again in an hour."
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:280
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:283
 #, javascript-format
 msgid "Could not update: %s"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:282
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:285
 msgid "Could not check for updates. Check your internet connection."
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:291
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:295
 msgid "Widgets"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:292
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:296
 msgid ""
 "Hidden widgets are not loaded at all. You can also rearrange them from the "
 "panel."
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:327
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:331
 msgid "Move up"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/prefs.js:328
+#: extension/ledge@gabrielgirardi.github.io/prefs.js:332
 msgid "Move down"
 msgstr ""
 
@@ -258,13 +267,13 @@ msgstr ""
 msgid "Tomorrow · %s"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:36
+#: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:46
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:8
 msgid "Batteries"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:10
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:89
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:118
 msgid "To-do"
 msgstr ""
 
@@ -349,32 +358,38 @@ msgstr ""
 msgid "%s CPU · %s"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:50
+#. Translators: a reminder time on the next day, e.g. "Tomorrow 09:00"
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:25
+#, javascript-format
+msgid "Tomorrow %s"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:67
 msgid "Delete task"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:83
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:103
 msgid "Mark as not done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:83
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:103
 msgid "Mark as done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:107
-msgid "Add a task"
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:136
+msgid "Add a task, e.g. Call Ana 15:00"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:119
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:148
 msgid "Clear completed"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:214
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:218
 msgid "All done"
 msgstr ""
 
 #. Translators: tasks finished out of all tasks, e.g. "2 of 5 done"
-#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:217
+#: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:221
 #, javascript-format
 msgid "%d of %d done"
 msgstr ""

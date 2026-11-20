@@ -7,7 +7,7 @@ import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Ex
 import * as Config from 'resource:///org/gnome/Shell/Extensions/js/misc/config.js';
 
 import {HttpError, newSession, searchPlaces} from './geocode.js';
-import {messagesLanguage} from './locale.js';
+import {formatTime, messagesLanguage} from './locale.js';
 import {canSelfUpdate, findUpdate, installUpdate, installedVersion, isNewer} from './updater.js';
 import {CATALOG, shownWidgets} from './widgets/catalog.js';
 
@@ -274,12 +274,16 @@ export default class LedgePreferences extends ExtensionPreferences {
                 if (cancellable.is_cancelled())
                     return;
                 busy(false, found ? _('Update') : _('Check for updates'));
-                if (e instanceof HttpError && e.rateLimited)
+                if (e instanceof HttpError && e.rateLimited && e.retryAt) {
+                    version.subtitle = fmt(_('GitHub is limiting requests from your network. Try again after %s.'),
+                        formatTime(new Date(e.retryAt)));
+                } else if (e instanceof HttpError && e.rateLimited) {
                     version.subtitle = _('GitHub is limiting requests from your network. Try again in an hour.');
-                else if (found)
+                } else if (found) {
                     version.subtitle = fmt(_('Could not update: %s'), e.message);
-                else
+                } else {
                     version.subtitle = _('Could not check for updates. Check your internet connection.');
+                }
             }
         });
         return group;

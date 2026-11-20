@@ -114,6 +114,14 @@ class Shell:
         subprocess.run(["gsettings", "set", schema, key, value], check=True, env=env)
         time.sleep(0.3)
 
+    def reload(self):
+        """Turns Ledge off and on, so it reads its files again, as at login."""
+        env = dict(os.environ, DBUS_SESSION_BUS_ADDRESS=(STATE_DIR / "bus").read_text().strip())
+        for action in ("disable", "enable"):
+            subprocess.run(["gnome-extensions", action, "ledge@gabrielgirardi.github.io"], check=True, env=env)
+            time.sleep(0.5)
+        self.wait_for(lambda: self.state()["state"] == "CLOSED", "Ledge back on")
+
     def set_setting(self, key, value):
         self.gsettings("org.gnome.shell.extensions.ledge", key, value)
 

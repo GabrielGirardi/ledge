@@ -57,14 +57,21 @@ check('other shells do not match', supportsShell({'shell-version': ['46', '47']}
 const server = new Soup.Server();
 server.add_handler(null, (_server, msg) => {
     msg.set_status(403, null);
+    msg.get_response_headers().append('X-RateLimit-Remaining', '0');
+    msg.get_response_headers().append('X-RateLimit-Reset', '1795000000');
     msg.set_response('application/json', Soup.MemoryUse.COPY, new TextEncoder().encode('{"message":"API rate limit exceeded"}'));
 });
 server.listen_local(0, Soup.ServerListenOptions.IPV4_ONLY);
 const url = `${server.get_uris()[0].to_string()}releases`;
 const error = await findUpdate(newSession(), '0.5.0', '46.0', {url}).catch(e => e);
-check('a refusal from GitHub is reported as rate limiting',
-    [error instanceof HttpError, error.status, error.rateLimited], [true, 403, true]);
+check('a refusal from GitHub is reported as rate limiting, with when to retry',
+    [error instanceof HttpError, error.status, error.rateLimited, error.retryAt], [true, 403, true, 1795000000000]);
 check('a missing page is not rate limiting', new HttpError(404, url).rateLimited, false);
+check('a 403 with requests left (a proxy, say) is not rate limiting', new HttpError(403, url).rateLimited, false);
+const secondary = new Soup.MessageHeaders(Soup.MessageHeadersType.RESPONSE);
+secondary.append('X-RateLimit-Remaining', '41');
+secondary.append('Retry-After', '60');
+check("GitHub's secondary limit (Retry-After) is rate limiting", new HttpError(403, url, secondary).rateLimited, true);
 
 if (failures) {
     print(`${failures} failed`);

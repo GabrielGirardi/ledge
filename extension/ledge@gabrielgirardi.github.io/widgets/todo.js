@@ -6,11 +6,27 @@ import St from 'gi://St';
 
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import {JsonStore} from '../store.js';
+import {formatTime, timeLocale} from '../locale.js';
+import {daysFromToday, parseReminder} from '../reminders.js';
 import {cardShell} from './card.js';
 import {VERTICAL} from '../compat.js';
 
 const MAX_LENGTH = 200;
+
+/** "15:00" today, "Tomorrow 09:00", or the date for any other day. */
+function reminderLabel(at) {
+    const date = new Date(at);
+    const time = formatTime(date);
+    switch (daysFromToday(at)) {
+    case 0:
+        return time;
+    case 1:
+        /* Translators: a reminder time on the next day, e.g. "Tomorrow 09:00" */
+        return _('Tomorrow %s').format(time);
+    default:
+        return `${date.toLocaleDateString(timeLocale(), {day: 'numeric', month: 'numeric'})} ${time}`;
+    }
+}
 
 /**
  * A scroll view whose minimum height is its natural height (which the theme
@@ -41,6 +57,7 @@ class TaskRow {
 
         this._label = new St.Label({style_class: 'ledge-todo-text', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         this._label.clutter_text.ellipsize = Pango.EllipsizeMode.END;
+        this._time = new St.Label({style_class: 'ledge-todo-time', y_align: Clutter.ActorAlign.CENTER});
 
         this._remove = new St.Button({
             style_class: 'ledge-todo-remove',
@@ -61,6 +78,7 @@ class TaskRow {
 
         this.actor.add_child(this._check);
         this.actor.add_child(this._label);
+        this.actor.add_child(this._time);
         this.actor.add_child(this._remove);
         this.update(item);
     }
@@ -68,6 +86,8 @@ class TaskRow {
     setIndex(index) {
         this._check.name = `ledge:todo-check:${index}`;
         this._remove.name = `ledge:todo-trash:${index}`;
+        this._label.name = `ledge:todo-text:${index}`;
+        this._time.name = `ledge:todo-time:${index}`;
     }
 
     update(item) {
@@ -81,11 +101,20 @@ class TaskRow {
             this._check.remove_style_pseudo_class('checked');
         }
         this._check.accessible_name = item.done ? _('Mark as not done') : _('Mark as done');
+        this._time.visible = Boolean(item.at) && !item.done;
+        if (item.at) {
+            this._time.text = reminderLabel(item.at);
+            if (item.notified)
+                this._time.add_style_pseudo_class('due');
+            else
+                this._time.remove_style_pseudo_class('due');
+        }
     }
 }
 
 export class TodoWidget {
-    constructor() {
+    /** Renders `model`, a TodoModel that outlives the card. */
+    constructor(model) {
         this.actor = cardShell('checkbox-checked-symbolic', _('To-do').toUpperCase());
 
         // Same picking fix as the panel's scroll view: clip on the scroll
@@ -104,7 +133,7 @@ export class TodoWidget {
 
         this._entry = new St.Entry({
             style_class: 'ledge-todo-entry',
-            hint_text: _('Add a task'),
+            hint_text: _('Add a task, e.g. Call Ana 15:00'),
             can_focus: true,
             x_expand: true,
             primary_icon: new St.Icon({icon_name: 'list-add-symbolic', style_class: 'ledge-todo-entry-icon'}),
@@ -117,31 +146,28 @@ export class TodoWidget {
         this._footer = new St.BoxLayout({style_class: 'ledge-todo-footer'});
         this._summary = new St.Label({style_class: 'ledge-card-sub', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         this._clear = new St.Button({style_class: 'ledge-link-button', label: _('Clear completed'), can_focus: true, name: 'ledge:todo-clear'});
-        this._clear.connect('clicked', () => this._clearDone());
+        this._clear.connect('clicked', () => this._model.clearDone());
         this._footer.add_child(this._summary);
         this._footer.add_child(this._clear);
         this.actor.add_child(this._footer);
 
-        this._items = [];
+        this._model = model;
         this._rows = new Map();
-        this._store = new JsonStore('todo.json');
-        this._store.load({items: []}).then(data => {
-            if (!this._store)
-                return;
-            // Keep anything added while the file was still loading.
-            this._items = [...(Array.isArray(data.items) ? data.items : []), ...this._items];
-            this._sync();
-        });
+        this._unsubscribe = model.subscribe(() => this._sync());
+        this._sync();
+    }
+
+    /** On opening: reminder labels say "Tomorrow" only until midnight. */
+    refresh() {
         this._sync();
     }
 
     _add() {
-        const text = this._entry.text.trim();
+        const {text, at} = parseReminder(this._entry.text);
         if (!text)
             return;
-        this._items.push({id: GLib.uuid_string_random(), text, done: false});
         this._entry.text = '';
-        this._commit();
+        this._model.add(text, at);
         // Show the new task, which lands at the end of the list.
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             const adjustment = this._scroll.vadjustment;
@@ -150,48 +176,26 @@ export class TodoWidget {
         });
     }
 
-    _toggle(id) {
-        const item = this._items.find(i => i.id === id);
-        if (!item)
-            return;
-        item.done = !item.done;
-        this._commit();
-    }
-
-    _remove(id) {
-        this._items = this._items.filter(i => i.id !== id);
-        this._commit();
-    }
-
-    _clearDone() {
-        this._items = this._items.filter(i => !i.done);
-        this._commit();
-    }
-
-    _commit() {
-        this._store.save({items: this._items});
-        this._sync();
-    }
-
     /**
      * Updates rows in place, in creation order. A finished task stays where
      * it is: moving it would put a different task under the pointer, and the
      * next click would toggle that one instead.
      */
     _sync() {
-        const ids = new Set(this._items.map(i => i.id));
+        const items = this._model.items;
+        const ids = new Set(items.map(i => i.id));
         for (const [id, row] of this._rows) {
             if (!ids.has(id)) {
                 row.actor.destroy();
                 this._rows.delete(id);
             }
         }
-        this._items.forEach((item, index) => {
+        items.forEach((item, index) => {
             let row = this._rows.get(item.id);
             if (!row) {
                 row = new TaskRow(item, {
-                    onToggle: id => this._toggle(id),
-                    onRemove: id => this._remove(id),
+                    onToggle: id => this._model.toggle(id),
+                    onRemove: id => this._model.remove(id),
                 });
                 this._rows.set(item.id, row);
             }
@@ -205,8 +209,8 @@ export class TodoWidget {
             }
         });
 
-        const done = this._items.filter(i => i.done).length;
-        const total = this._items.length;
+        const done = items.filter(i => i.done).length;
+        const total = items.length;
         this._scroll.visible = total > 0;
         this._footer.visible = total > 0;
         this._clear.visible = done > 0;
@@ -218,7 +222,7 @@ export class TodoWidget {
     }
 
     destroy() {
-        this._store = null;
+        this._unsubscribe();
         this.actor.destroy();
     }
 }

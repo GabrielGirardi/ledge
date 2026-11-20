@@ -8,6 +8,7 @@ import St from 'gi://St';
 
 import * as Layout from 'resource:///org/gnome/shell/ui/layout.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
@@ -24,12 +25,17 @@ import {TodoWidget} from './widgets/todo.js';
 import {WeatherWidget} from './widgets/weather.js';
 import {shownWidgets} from './widgets/catalog.js';
 import {VERTICAL} from './compat.js';
+import {TodoModel} from './todoModel.js';
 
+/** The panel of the enabled extension, if any. */
+let current = null;
+
+// Each takes what the panel shares: {settings, todo}.
 const FACTORIES = {
-    'weather': settings => new WeatherWidget(settings),
+    'weather': ({settings}) => new WeatherWidget(settings),
     'batteries': () => new BatteriesWidget(),
     'calendar': () => new AgendaWidget(),
-    'todo': () => new TodoWidget(),
+    'todo': ({todo}) => new TodoWidget(todo),
     'screen-time': () => new ScreenTimeWidget(),
     'media': () => new MediaWidget(),
     'system': () => new SystemWidget(),
@@ -83,6 +89,9 @@ class Ledge {
         const settings = extension.getSettings();
         this._extension = extension;
         this._settings = settings;
+        // Outlives the To-do card, so reminders fire while it is hidden.
+        this._todo = new TodoModel({notify: item => this._notifyReminder(item)});
+        current = this;
         this._monitorIndex = Main.layoutManager.primaryIndex;
         this._state = State.CLOSED;
         this._progress = 0;
@@ -216,6 +225,8 @@ class Ledge {
     }
 
     destroy() {
+        if (current === this)
+            current = null;
         this._stopSpring();
         this._releaseInput();
         this._signalIds.forEach(id => Gio.DBus.session.signal_unsubscribe(id));
@@ -230,6 +241,7 @@ class Ledge {
         this._edit.destroy();
         this._widgetById.forEach(w => w.destroy());
         this._widgetById.clear();
+        this._todo.destroy();
         this._glass.destroy();
         Main.layoutManager.removeChrome(this._strip);
         this._strip.destroy();
@@ -255,7 +267,7 @@ class Ledge {
         this._widgets = order.map(id => {
             let widget = this._widgetById.get(id);
             if (!widget) {
-                widget = FACTORIES[id](this._settings);
+                widget = FACTORIES[id]({settings: this._settings, todo: this._todo});
                 widget.actor.name = `ledge:card:${id}`;
                 this._widgetById.set(id, widget);
                 this._content.add_child(widget.actor);
@@ -265,6 +277,29 @@ class Ledge {
             return widget;
         });
         this._edit?.refresh();
+    }
+
+    /**
+     * Unlike Main.notify(), the notification stays in the list after its
+     * banner hides, so a reminder missed at a glance is still there. Clicking
+     * it opens the panel.
+     */
+    _notifyReminder(item) {
+        const source = MessageTray.getSystemSource();
+        const notification = new MessageTray.Notification({
+            source,
+            title: item.text,
+            body: _('Reminder from your Ledge to-do list'),
+            isTransient: false,
+        });
+        // Ledge is turned off on every screen lock, so a notification can
+        // outlive the panel that sent it: open whichever panel is current.
+        notification.connect('activated', () => {
+            Main.panel.closeCalendar();
+            if (current?._state === State.CLOSED)
+                current.toggle('pointer');
+        });
+        source.addNotification(notification);
     }
 
     _inward() {
@@ -763,6 +798,7 @@ class Ledge {
                 [w.actor.name.slice('ledge:card:'.length), w.actor.title.text])),
             pointer: global.get_pointer().slice(0, 2),
             overview: Main.overview.visible,
+            notifications: Main.messageTray.getSources().flatMap(source => source.notifications.map(n => n.title)),
             windows: global.get_window_actors().map(a => [a.meta_window.get_title(), a.meta_window.get_pid()]),
             targets,
             texts,

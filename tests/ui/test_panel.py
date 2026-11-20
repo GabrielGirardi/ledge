@@ -3,6 +3,7 @@
 Each test that guards a past bug names it, so a failure says what came back.
 """
 
+import json
 import os
 import re
 import signal
@@ -328,6 +329,56 @@ class PhoneTest(unittest.TestCase):
         shell.wait_for(lambda: self.label() == "⚡50%", "charging at 50%")
         self.send("connected false")
         shell.wait_for(lambda: self.label() is None, "the phone gone once disconnected")
+
+
+class ReminderTest(unittest.TestCase):
+    def tearDown(self):
+        shell.close_panel()
+        (DATA_DIR / "todo.json").unlink(missing_ok=True)
+        shell.reload()
+        shell.set_setting("widgets", DEFAULT_WIDGETS)
+
+    def test_a_time_at_the_end_becomes_a_reminder(self):
+        shell.set_setting("widgets", "['todo']")
+        shell.open_panel()
+        shell.click_target("todo-entry")
+        shell.type("Call Ana 23:59\nStudy 2h\n")
+        texts = lambda: shell.state()["texts"]
+        shell.wait_for(lambda: texts().get("todo-text:1") == "Study 2h", "both tasks")
+        self.assertEqual(texts()["todo-text:0"], "Call Ana")
+        self.assertRegex(texts()["todo-time:0"], r"^(Tomorrow )?(23:59|11:59\sPM)$")
+        self.assertEqual(texts()["todo-time:1"], "", "a duration is not a reminder")
+
+    def write_reminder(self, text, seconds_from_now):
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        (DATA_DIR / "todo.json").write_text(json.dumps({"items": [
+            {"id": "r1", "text": text, "done": False, "at": int((time.time() + seconds_from_now) * 1000)},
+        ]}))
+        shell.reload()
+
+    def notified(self, text):
+        # Reminder notifications stay in the list, so each test uses its own text.
+        return shell.state()["notifications"].count(text)
+
+    def test_a_due_reminder_is_notified_once_even_with_the_card_hidden(self):
+        shell.set_setting("widgets", "['weather']")
+        self.write_reminder("Water the plants", 3)
+        shell.wait_for(lambda: self.notified("Water the plants") == 1, "the reminder", timeout=15)
+        time.sleep(15)
+        self.assertEqual(self.notified("Water the plants"), 1, "still listed after the banner, and only once")
+        shell.wait_for(lambda: json.loads((DATA_DIR / "todo.json").read_text())["items"][0].get("notified"),
+                       "the reminder saved as notified")
+
+    def test_a_reminder_days_old_shows_its_date_without_notifying(self):
+        # QA, 0.6 work: one left from yesterday read "Tomorrow 15:00", and
+        # after days locked out, old ones all popped up at once.
+        shell.set_setting("widgets", "['todo']")
+        self.write_reminder("Pay the old bill", -2 * 86400)
+        shell.open_panel()
+        chip = shell.wait_for(lambda: shell.state()["texts"].get("todo-time:0"), "the chip")
+        self.assertNotIn("Tomorrow", chip)
+        self.assertGreater(len(chip), 6, "a date before the time")
+        self.assertEqual(self.notified("Pay the old bill"), 0)
 
 
 class ScreenTimeTest(unittest.TestCase):

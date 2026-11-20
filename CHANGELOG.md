@@ -14,11 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   only while the panel is open (#12).
 - Batteries: phones paired with GSConnect and connected show their battery
   next to the other devices (#11).
+- To-do reminders: end a task with a time (`Call Ana 15:00`, `Call Ana
+  tomorrow at 3pm`, `Ligar pra Ana amanhã às 15h`) and a notification comes at
+  that time, once. It stays in the notification list, and clicking it opens
+  the panel. The task shows the time. Reminders keep working while the card
+  is hidden; ones that came due while the screen was locked notify when you
+  are back, if they are less than a day old.
 
 ### Changed
 
 - The settings say when GitHub is limiting update checks from your network,
-  instead of blaming the internet connection.
+  and when to try again, instead of blaming the internet connection.
 
 ### Development
 

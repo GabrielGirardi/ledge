@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- System widget: CPU, memory, and disk use, and the app weighing on the
+  machine the most right now, counted with all its helper processes. It reads
+  only while the panel is open (#12).
+
+### Changed
+
+- The settings say when GitHub is limiting update checks from your network,
+  instead of blaming the internet connection.
+
 ## [0.5.0] - 2026-11-07
 
 ### Added

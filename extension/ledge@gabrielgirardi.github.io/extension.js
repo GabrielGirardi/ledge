@@ -19,6 +19,7 @@ import {AgendaWidget} from './widgets/agenda.js';
 import {BatteriesWidget} from './widgets/batteries.js';
 import {MediaWidget} from './widgets/media.js';
 import {ScreenTimeWidget} from './widgets/screentime.js';
+import {SystemWidget} from './widgets/system.js';
 import {TodoWidget} from './widgets/todo.js';
 import {WeatherWidget} from './widgets/weather.js';
 import {shownWidgets} from './widgets/catalog.js';
@@ -31,6 +32,7 @@ const FACTORIES = {
     'todo': () => new TodoWidget(),
     'screen-time': () => new ScreenTimeWidget(),
     'media': () => new MediaWidget(),
+    'system': () => new SystemWidget(),
 };
 
 const BUS_PATH = '/io/github/gabrielgirardi/Ledge/Touchpad';

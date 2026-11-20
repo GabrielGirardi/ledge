@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-20 00:07-0300\n"
+"POT-Creation-Date: 2026-11-20 00:11-0300\n"
 "PO-Revision-Date: 2026-11-03 20:07-0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -31,19 +31,19 @@ msgstr "Adicionar widgets"
 msgid "Add %s"
 msgstr "Adicionar %s"
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:132
+#: extension/ledge@gabrielgirardi.github.io/extension.js:134
 msgid "Settings"
 msgstr "Configurações"
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:144
+#: extension/ledge@gabrielgirardi.github.io/extension.js:146
 msgid "Edit widgets"
 msgstr "Editar widgets"
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:151
+#: extension/ledge@gabrielgirardi.github.io/extension.js:153
 msgid "Done"
 msgstr "Concluído"
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:340
+#: extension/ledge@gabrielgirardi.github.io/extension.js:342
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:19
 msgid "Today"
 msgstr "Hoje"
@@ -185,7 +185,9 @@ msgstr "Atualizando…"
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:278
 msgid "GitHub is limiting requests from your network. Try again in an hour."
-msgstr "O GitHub está limitando as consultas da sua rede. Tente de novo daqui a uma hora."
+msgstr ""
+"O GitHub está limitando as consultas da sua rede. Tente de novo daqui a uma "
+"hora."
 
 #: extension/ledge@gabrielgirardi.github.io/prefs.js:280
 #, javascript-format
@@ -266,7 +268,7 @@ msgstr "%s – %s"
 msgid "Tomorrow · %s"
 msgstr "Amanhã · %s"
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:90
+#: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:36
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:8
 msgid "Batteries"
 msgstr "Baterias"
@@ -285,6 +287,11 @@ msgstr "Tempo de uso"
 #: extension/ledge@gabrielgirardi.github.io/widgets/media.js:18
 msgid "Now Playing"
 msgstr "Tocando agora"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:13
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:32
+msgid "System"
+msgstr "Sistema"
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:20
 msgid "7 days"
@@ -326,6 +333,31 @@ msgstr "Nada registrado neste período"
 #, javascript-format
 msgid "Average %s a day"
 msgstr "Média de %s por dia"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:94
+msgid "CPU"
+msgstr "CPU"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:100
+msgid "Memory"
+msgstr "Memória"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:106
+msgid "Disk"
+msgstr "Disco"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:119
+msgid "Busiest app right now"
+msgstr "App mais ocupado agora"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:119
+msgid "App using the most memory"
+msgstr "App usando mais memória"
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:124
+#, javascript-format
+msgid "%s CPU · %s"
+msgstr "%s de CPU · %s"
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:50
 msgid "Delete task"

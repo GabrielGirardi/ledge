@@ -4,6 +4,7 @@ Each test that guards a past bug names it, so a failure says what came back.
 """
 
 import os
+import re
 import signal
 import time
 import unittest
@@ -279,6 +280,22 @@ class WeatherTest(unittest.TestCase):
         shell.wait_for(lambda: self.title() == "WEATHER · RECIFE", "Recife in the title")
         time.sleep(3)  # long enough for a stale update to land
         self.assertEqual(self.title(), "WEATHER · RECIFE")
+
+
+class SystemTest(unittest.TestCase):
+    def test_shows_cpu_memory_and_disk(self):
+        shell.set_setting("widgets", "['system']")
+        shell.open_panel()
+        text = lambda name: shell.state()["texts"].get(name, "")
+        try:
+            # The CPU share needs two readings, two seconds apart.
+            shell.wait_for(lambda: re.fullmatch(r"\d+%", text("system-cpu")), "a CPU share")
+            for name in ("system-memory", "system-disk"):
+                self.assertRegex(text(name), r"^\d+%$")
+            self.assertNotEqual(text("system-memory"), "0%")
+        finally:
+            shell.close_panel()
+            shell.set_setting("widgets", DEFAULT_WIDGETS)
 
 
 class ScreenTimeTest(unittest.TestCase):

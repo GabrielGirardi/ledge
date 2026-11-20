@@ -10,6 +10,7 @@ export const CATALOG = [
     {id: 'todo', title: N_('To-do'), icon: 'checkbox-checked-symbolic'},
     {id: 'screen-time', title: N_('Screen Time'), icon: 'preferences-system-time-symbolic'},
     {id: 'media', title: N_('Now Playing'), icon: 'audio-x-generic-symbolic'},
+    {id: 'system', title: N_('System'), icon: 'computer-symbolic'},
 ];
 
 const KNOWN = new Set(CATALOG.map(w => w.id));

@@ -47,6 +47,8 @@
 .ledge-battery { spacing: 6px; }
 .ledge-battery-icon { icon-size: 20px; color: #ffffff; }
 .ledge-battery-label { color: rgba(255, 255, 255, 0.85); font-size: 12px; font-weight: 600; }
+.ledge-ring-value { color: #ffffff; font-size: 13px; font-weight: 600; }
+.ledge-system-caption { padding-top: 10px; }
 
 .ledge-agenda { spacing: 8px; padding-top: 2px; }
 .ledge-agenda-empty { color: rgba(255, 255, 255, 0.7); font-size: 14px; }

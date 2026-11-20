@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ledge\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-20 00:07-0300\n"
+"POT-Creation-Date: 2026-11-20 00:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,19 +31,19 @@ msgstr ""
 msgid "Add %s"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:132
+#: extension/ledge@gabrielgirardi.github.io/extension.js:134
 msgid "Settings"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:144
+#: extension/ledge@gabrielgirardi.github.io/extension.js:146
 msgid "Edit widgets"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:151
+#: extension/ledge@gabrielgirardi.github.io/extension.js:153
 msgid "Done"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/extension.js:340
+#: extension/ledge@gabrielgirardi.github.io/extension.js:342
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:19
 msgid "Today"
 msgstr ""
@@ -258,7 +258,7 @@ msgstr ""
 msgid "Tomorrow · %s"
 msgstr ""
 
-#: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:90
+#: extension/ledge@gabrielgirardi.github.io/widgets/batteries.js:36
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:8
 msgid "Batteries"
 msgstr ""
@@ -276,6 +276,11 @@ msgstr ""
 #: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:12
 #: extension/ledge@gabrielgirardi.github.io/widgets/media.js:18
 msgid "Now Playing"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/catalog.js:13
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:32
+msgid "System"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:20
@@ -317,6 +322,31 @@ msgstr ""
 #: extension/ledge@gabrielgirardi.github.io/widgets/screentime.js:106
 #, javascript-format
 msgid "Average %s a day"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:94
+msgid "CPU"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:100
+msgid "Memory"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:106
+msgid "Disk"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:119
+msgid "Busiest app right now"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:119
+msgid "App using the most memory"
+msgstr ""
+
+#: extension/ledge@gabrielgirardi.github.io/widgets/system.js:124
+#, javascript-format
+msgid "%s CPU · %s"
 msgstr ""
 
 #: extension/ledge@gabrielgirardi.github.io/widgets/todo.js:50
